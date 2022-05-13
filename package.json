@@ -1,0 +1,12 @@
+{
+  "name": "edge-addon",
+  "version": "1.0.0",
+  "description": "Publish addon to Microsoft Edge Add-ons.",
+  "author": "hyperbola",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wdzeng/edge-addon"
+  },
+  "license": "MIT"
+}
