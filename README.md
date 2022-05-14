@@ -30,7 +30,7 @@ Example:
 steps:
   - uses: wdzeng/edge-addon@v1
     with:
-      product-id: your-extension-id
+      product-id: your-addon-product-id
       zip-path: your-addon.zip
       client-id: ${{ secrets.EDGE_CLIENT_ID }}
       client-secret: ${{ secrets.EDGE_CLIENT_SECRET }}
