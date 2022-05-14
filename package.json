@@ -1,12 +1,15 @@
 {
   "name": "edge-addon",
   "version": "1.0.0",
-  "main": "index.ts",
+  "description": "Publish addon to Edge Add-ons.",
   "author": "Hyperbola",
-  "license": "MIT",
   "scripts": {
     "build": "tsc && ncc ./dist/index.js && cp action.yml dist",
     "clean": "rm -rf dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wdzeng/edge-addon"
   },
   "dependencies": {
     "@actions/core": "^1.8.1",
