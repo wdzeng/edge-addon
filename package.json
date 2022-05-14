@@ -1,7 +1,7 @@
 {
   "name": "edge-addon",
   "version": "1.0.0",
-  "description": "Publish addon to Edge Add-ons.",
+  "description": "Publish addon to Microsoft Edge Add-ons.",
   "author": "Hyperbola",
   "scripts": {
     "build": "tsc && ncc build ./dist/index.js && cp action.yml dist",
