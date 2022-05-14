@@ -1,0 +1,28 @@
+name: Publish Edge Add-on
+author: Hyperbola
+description: Publish addon onto Edge Add-ons
+
+inputs:
+  product-id:
+    description: Product ID of the add-on.
+    required: true
+  zip-path:
+    description: Path to the zip file of the add-on.
+    required: true
+  client-id:
+    description: Edge publish API client ID.
+    required: true
+  client-secret:
+    description: Edge publish API client secret.
+    required: true
+  access-token-url:
+    description: Edge publish API access token URL.
+    required: true
+
+runs:
+  using: node16
+  main: index.js
+
+branding:
+  icon: aperture
+  color: blue
