@@ -4,6 +4,10 @@
   "main": "index.ts",
   "author": "Hyperbola",
   "license": "MIT",
+  "scripts": {
+    "build": "tsc && ncc ./dist/index.js && cp action.yml dist",
+    "clean": "rm -rf dist"
+  },
   "dependencies": {
     "@actions/core": "^1.8.1",
     "axios": "^0.27.2"
