@@ -177,16 +177,16 @@ async function main() {
   const zipPath = core.getInput('zip-path', { required: true })
   const clientId = core.getInput('client-id', { required: true })
   const clientSecret = core.getInput('client-secret', { required: true })
-  const accessUrl = core.getInput('access-url', { required: true })
+  const accessTokenUrl = core.getInput('access-token-url', { required: true })
 
   core.debug('Using product ID: ' + productId)
   core.debug('Using zip file path: ' + zipPath)
   core.debug('Using client id: ' + clientId)
   core.debug('Using client secret: ' + clientSecret)
-  core.debug('Using access url: ' + accessUrl)
+  core.debug('Using access url: ' + accessTokenUrl)
 
   try {
-    await run(productId, zipPath, clientId, clientSecret, accessUrl)
+    await run(productId, zipPath, clientId, clientSecret, accessTokenUrl)
   } catch (e: unknown) {
     handleError(e)
   }
