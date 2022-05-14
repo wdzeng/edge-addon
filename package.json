@@ -4,7 +4,7 @@
   "description": "Publish addon to Edge Add-ons.",
   "author": "Hyperbola",
   "scripts": {
-    "build": "tsc && ncc ./dist/index.js && cp action.yml dist",
+    "build": "tsc && ncc build ./dist/index.js && cp action.yml dist",
     "clean": "rm -rf dist"
   },
   "repository": {
