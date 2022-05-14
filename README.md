@@ -1,5 +1,9 @@
 # Edge Addon
 
+![version](https://img.shields.io/github/v/release/wdzeng/edge-addon)
+![workflow](https://img.shields.io/github/workflow/status/wdzeng/edge-addon/Build?label=ci&logo=github)
+![license](https://img.shields.io/github/license/wdzeng/edge-addon?color=red)
+
 This action publishes your Edge add-on onto [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/Microsoft-Edge-Extensions-Home) using the [Microsoft Edge Add-ons API v1](https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api).
 
 This action can only publish new version of an existing add-on. Publishing a new add-on is not supported.
