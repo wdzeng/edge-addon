@@ -88,8 +88,18 @@ async function sendSubmissionRequest(productId: string, token: string) {
   core.debug('Operation ID: ' + operationId)
   // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#check-the-publishing-status
   url = `https://api.addons.microsoftedge.microsoft.com/v1/products/${productId}/submissions/operations/${operationId}`
-  response = await axios(url, { headers: { Authorization: `Bearer ${token}` } })
-  const status = response.data.Status
+  let status: string
+  while (true) {
+    response = await axios(url, { headers: { Authorization: `Bearer ${token}` } })
+    status = response.data.Status
+
+    if (status !== 'InProgress') {
+      break
+    }
+
+    core.info('Validation in progress. Wait 10 seconds.')
+    await new Promise(res => setTimeout(res, 10000))
+  }
 
   if (status === 'Succeeded') {
     // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-the-publish-call-succeeds
