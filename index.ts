@@ -2,6 +2,9 @@ import fs from 'fs'
 import axios, { AxiosError } from 'axios'
 import * as core from '@actions/core'
 
+const noErrMsg = 'The API server does not provide any error message.'
+const noErrDetails = 'The API server does not provide any error details.'
+
 // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api
 
 async function getAccessToken(clientId: string, clientSecret: string, accessTokenUrl: string): Promise<string> {
@@ -95,31 +98,51 @@ async function sendSubmissionRequest(productId: string, token: string) {
   }
 
   // Failed
-  const errorCode = response.data.errorCode
-  core.setFailed('Submission request not accepted.')
-  core.debug('Error code: ' + errorCode)
+  const errorCode = response.data.errorCode as null | undefined | string
+  const errors = response.data.errors as null | undefined | unknown[]
+  if (errorCode) {
+    core.setFailed('Submission request not accepted: ' + errorCode)
+  }
+  else {
+    core.setFailed('Submission request not accepted.')
+    core.debug('Error code: ' + errorCode)
+  }
+
   core.debug(JSON.stringify(response.data))
-  
+
   if (errorCode === undefined || errorCode === null) {
     // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-the-publish-call-fails-with-an-irrecoverable-failure
     // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-the-publish-call-fails-with-an-unexpected-failure
-    core.setFailed(response.data.message)
+
+    // According to the API there should be error message provided. However
+    // actually it may be null.
+    core.setFailed(response.data.message || noErrMsg)
     process.exit(1)
   }
 
   switch (errorCode) {
     case 'SubmissionValidationError':
       // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-there-are-validation-errors-in-submission
-      core.setFailed(response.data.message)
+      core.setFailed(response.data.message || noErrMsg)
       // TODO not sure if errors is list of string
-      response.data.message.errors.forEach((e: unknown) => core.setFailed(JSON.stringify(e)))
+      if (errors) {
+        errors.forEach((e: unknown) => core.setFailed(JSON.stringify(e)))
+      }
+      else {
+        core.setFailed(noErrDetails)
+      }
       break
 
     case 'ModuleStateUnPublishable':
       // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-where-any-of-the-modules-are-invalid
-      core.setFailed(response.data.message)
+      core.setFailed(response.data.message || noErrMsg)
       // TODO not sure if the errors is of length 1
-      core.setFailed(JSON.stringify(response.data.errors))
+      if (errors) {
+        errors.forEach((e: unknown) => core.setFailed(JSON.stringify(e)))
+      }
+      else {
+        core.setFailed(noErrDetails)
+      }
       break
 
     case 'UnpublishInProgress':
@@ -130,13 +153,12 @@ async function sendSubmissionRequest(productId: string, token: string) {
       // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-there-is-an-in-review-submission-for-the-same-product
       // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-there-is-nothing-new-to-be-published
       // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-a-new-product-is-published
-      core.setFailed(response.data.message)
+      core.setFailed(response.data.message || noErrMsg)
       break
 
     default:
       core.warning('Get unexpected error code: ' + errorCode)
-      core.debug(JSON.stringify(response.data))
-      core.setFailed(response.data.message)
+      core.setFailed(response.data.message || noErrMsg)
       break
   }
 
