@@ -95,14 +95,15 @@ async function sendSubmissionRequest(productId: string, token: string) {
   }
 
   // Failed
-  core.setFailed('Submission request not accepted.')
   const errorCode = response.data.errorCode
-
+  core.setFailed('Submission request not accepted.')
+  core.debug('Error code: ' + errorCode)
+  
   if (errorCode === undefined || errorCode === null) {
     // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-the-publish-call-fails-with-an-irrecoverable-failure
     // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-the-publish-call-fails-with-an-unexpected-failure
     core.setFailed(response.data.message)
-    return
+    process.exit(1)
   }
 
   switch (errorCode) {
@@ -111,14 +112,14 @@ async function sendSubmissionRequest(productId: string, token: string) {
       core.setFailed(response.data.message)
       // TODO not sure if errors is list of string
       response.data.message.errors.forEach((e: unknown) => core.setFailed(JSON.stringify(e)))
-      return
+      break
 
     case 'ModuleStateUnPublishable':
       // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-where-any-of-the-modules-are-invalid
       core.setFailed(response.data.message)
       // TODO not sure if the errors is of length 1
       core.setFailed(JSON.stringify(response.data.errors))
-      return
+      break
 
     case 'UnpublishInProgress':
     case 'InProgressSubmission':
@@ -129,14 +130,16 @@ async function sendSubmissionRequest(productId: string, token: string) {
       // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-there-is-nothing-new-to-be-published
       // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-a-new-product-is-published
       core.setFailed(response.data.message)
-      return
+      break
 
     default:
       core.warning('Get unexpected error code: ' + errorCode)
       core.debug(JSON.stringify(response.data))
       core.setFailed(response.data.message)
-      return
+      break
   }
+
+  process.exit(1)
 }
 
 async function run(productId: string, zipPath: string, clientId: string, clientSecret: string, accessUrl: string): Promise<void> {
