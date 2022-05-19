@@ -92,6 +92,7 @@ async function sendSubmissionRequest(productId: string, token: string) {
   while (true) {
     response = await axios(url, { headers: { Authorization: `Bearer ${token}` } })
     status = response.data.Status
+    core.debug('Status: ' + status)
 
     if (status !== 'InProgress') {
       break
