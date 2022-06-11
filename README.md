@@ -45,3 +45,8 @@ steps:
 
 - [Using the Microsoft Edge Add-ons API](https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api)
 - [Microsoft Edge Add-ons API](https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api)
+
+## Sister Actions
+
+- [Chrome Extension Action](https://github.com/wdzeng/chrome-extension)
+- [Firefox Add-on Action](https://github.com/wdzeng/firefox-addon)
