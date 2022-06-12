@@ -1,8 +1,8 @@
 # Edge Addon
 
-![version](https://img.shields.io/github/v/release/wdzeng/edge-addon)
-![workflow](https://img.shields.io/github/workflow/status/wdzeng/edge-addon/Build?label=ci&logo=github)
-![license](https://img.shields.io/github/license/wdzeng/edge-addon?color=red)
+[![version](https://img.shields.io/github/v/release/wdzeng/edge-addon)](https://github.com/wdzeng/edge-addon/releases/latest)
+[![workflow](https://img.shields.io/github/workflow/status/wdzeng/edge-addon/Build?label=ci&logo=github)](https://github.com/wdzeng/edge-addon/actions)
+[![license](https://img.shields.io/github/license/wdzeng/edge-addon?color=red)](https://github.com/wdzeng/edge-addon/blob/main/LICENSE)
 
 This action publishes your Edge add-on onto [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/Microsoft-Edge-Extensions-Home) using the [Microsoft Edge Add-ons API v1](https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api).
 
