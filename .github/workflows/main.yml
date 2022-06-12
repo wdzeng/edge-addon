@@ -5,38 +5,11 @@ on:
     branches:
       - main
 
-env:
-  TARGET_BRANCH: tmp
-  TARGET_TAG: v1
-
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup nodejs v16
-        uses: actions/setup-node@v3
+      - uses: wdzeng/action-of-action@v1
         with:
-          node-version: 16
-      - name: Build project
-        run: yarn install --frozen-lockfile && yarn build
-      - name: Delete tag if exists
-        run: |
-          git ls-remote --exit-code origin refs/tags/$TARGET_TAG &&
-          git push origin --delete $TARGET_TAG ||
-          true
-      - name: Push to action branch
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          publish_branch: ${{ env.TARGET_BRANCH }}
-          tag_name: ${{ env.TARGET_TAG }}
-          commit_message: build
-          user_name: deploy-bot
-          user_email: deploy-bot@hyperbola.me
-          force_orphan: true
-          disable_nojekyll: true
-      - name: Delete temporary branch
-        run: git push origin --delete $TARGET_BRANCH
+          github-token: ${{ secrets.GITHUB_TOKEN }}
