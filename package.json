@@ -1,15 +1,16 @@
 {
   "name": "edge-addon",
+  "description": "Publish to Microsoft Edge Add-ons.",
   "version": "1.0.0",
-  "description": "Publish addon to Microsoft Edge Add-ons.",
   "author": "Hyperbola",
-  "scripts": {
-    "build": "tsc && ncc build ./dist/index.js && cp action.yml dist",
-    "clean": "rm -rf dist"
-  },
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wdzeng/edge-addon"
+  },
+  "scripts": {
+    "build": "tsc && ncc build ./dist/index.js && cp action.yml dist",
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@actions/core": "^1.8.1",
