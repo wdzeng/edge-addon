@@ -28,7 +28,7 @@ async function getAccessToken(clientId: string, clientSecret: string, accessToke
   return accessToken
 }
 
-async function uploadPackage(productId: string, zipPath: string, token: string): Promise<void> {
+async function uploadPackage(productId: string, zipPath: string, token: string): Promise<boolean> {
   core.info('Start to upload package.')
 
   // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api#uploading-a-package-to-update-an-existing-submission
@@ -66,13 +66,14 @@ async function uploadPackage(productId: string, zipPath: string, token: string):
 
   if (status === 'Succeeded') {
     core.info('Package validated.')
-    return
+    return true
   }
 
   // Validation failed.
   core.setFailed('Validation failed: ' + response.data.errorCode)
   core.setFailed(response.data.message)
   response.data.errors.forEach((e: unknown) => core.setFailed(JSON.stringify(e)))
+  return false
 }
 
 async function sendSubmissionRequest(productId: string, token: string) {
@@ -180,7 +181,13 @@ async function run(productId: string, zipPath: string, clientId: string, clientS
   core.info('Start to publish edge addon.')
 
   const token = await getAccessToken(clientId, clientSecret, accessUrl)
-  await uploadPackage(productId, zipPath, token)
+  const uploaded = await uploadPackage(productId, zipPath, token)
+
+  if (!uploaded) {
+    core.setFailed('Addon not published.')
+    return
+  }
+
   await sendSubmissionRequest(productId, token)
 
   core.info('Addon published.')
