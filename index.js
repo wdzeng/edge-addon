@@ -80,12 +80,13 @@ async function uploadPackage(productId, zipPath, token) {
     }
     if (status === 'Succeeded') {
         core.info('Package validated.');
-        return;
+        return true;
     }
     // Validation failed.
     core.setFailed('Validation failed: ' + response.data.errorCode);
     core.setFailed(response.data.message);
     response.data.errors.forEach((e) => core.setFailed(JSON.stringify(e)));
+    return false;
 }
 async function sendSubmissionRequest(productId, token) {
     core.info('Start to send submission request.');
@@ -102,7 +103,8 @@ async function sendSubmissionRequest(productId, token) {
     let status;
     while (true) {
         response = await (0, axios_1.default)(url, { headers: { Authorization: `Bearer ${token}` } });
-        status = response.data.Status;
+        status = response.data.status;
+        core.debug('Status: ' + status);
         if (status !== 'InProgress') {
             break;
         }
@@ -176,7 +178,11 @@ async function sendSubmissionRequest(productId, token) {
 async function run(productId, zipPath, clientId, clientSecret, accessUrl) {
     core.info('Start to publish edge addon.');
     const token = await getAccessToken(clientId, clientSecret, accessUrl);
-    await uploadPackage(productId, zipPath, token);
+    const uploaded = await uploadPackage(productId, zipPath, token);
+    if (!uploaded) {
+        core.setFailed('Addon not published.');
+        return;
+    }
     await sendSubmissionRequest(productId, token);
     core.info('Addon published.');
 }
