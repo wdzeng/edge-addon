@@ -1,6 +1,6 @@
 name: Publish Edge Add-on
 author: Hyperbola
-description: Publish addon onto Edge Add-ons
+description: GitHub Action for publishing extension to Microsoft Edge Add-on
 
 inputs:
   product-id:
