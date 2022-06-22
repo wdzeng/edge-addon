@@ -23,7 +23,7 @@ Please refer to this [tutorial](https://docs.microsoft.com/en-us/microsoft-edge/
 All options are required.
 
 - `product-id`: the id of your add-on.
-- `zip-path`: path to the zip file built in the previous steps.
+- `zip-path`: path to the zip file to be uploaded.
 - `client-id`: your API client ID.
 - `client-secret`: your API client secret.
 - `access-token-url`: your access token URL.
