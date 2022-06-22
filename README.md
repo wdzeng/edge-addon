@@ -38,7 +38,7 @@ steps:
       zip-path: your-addon.zip
       client-id: ${{ secrets.EDGE_CLIENT_ID }}
       client-secret: ${{ secrets.EDGE_CLIENT_SECRET }}
-      refresh-token: ${{ secrets.EDGE_REFRESH_TOKEN_URL }}
+      access-token-url: ${{ secrets.EDGE_ACCESS_TOKEN_URL }}
 ```
 
 ## References
