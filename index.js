@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const fs_1 = __importDefault(__nccwpck_require__(7147));
 const axios_1 = __importStar(__nccwpck_require__(6545));
 const core = __importStar(__nccwpck_require__(2186));
+const package_json_1 = __nccwpck_require__(881);
 const noErrMsg = 'The API server does not provide any error message.';
 const noErrDetails = 'The API server does not provide any error details.';
 // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api
@@ -190,21 +191,28 @@ function handleError(error) {
     // HTTP error
     if (error instanceof axios_1.AxiosError) {
         if (error.response) {
-            // Got response from Firefox API server with status code 4XX or 5XX
-            core.setFailed('Firefox API server responses with error code: ' + error.response.status);
+            // Got response from Edge Publish API server with status code 4XX or 5XX
+            core.setFailed('Edge Publish API server responses with error code: ' + error.response.status);
             core.setFailed(error.response.data);
+            if (typeof (error.response.data) === 'string') {
+                core.setFailed(error.response.data);
+            }
+            else {
+                core.setFailed(JSON.stringify(error.response.data));
+            }
         }
         core.setFailed(error.message);
         return;
     }
     // Unknown error
     if (error instanceof Error) {
-        core.setFailed('Unknown error occurred.');
-        core.setFailed(error);
+        core.setFailed('Unknown error occurred: ' + error.message);
+        core.debug(JSON.stringify(error));
         return;
     }
     // Unknown error type
     core.setFailed('Unknown error occurred.');
+    core.debug(JSON.stringify(error));
 }
 async function main() {
     const productId = core.getInput('product-id', { required: true });
@@ -224,6 +232,7 @@ async function main() {
         handleError(e);
     }
 }
+core.info(`Start edge addon action ${package_json_1.version}.`);
 main();
 
 
@@ -7213,6 +7222,14 @@ module.exports = require("util");
 
 "use strict";
 module.exports = require("zlib");
+
+/***/ }),
+
+/***/ 881:
+/***/ ((module) => {
+
+"use strict";
+module.exports = JSON.parse('{"name":"edge-addon","description":"Publish to Microsoft Edge Add-ons.","version":"v1.0.2","author":"Hyperbola","private":true,"repository":{"type":"git","url":"git+https://github.com/wdzeng/edge-addon"},"scripts":{"build":"tsc && ncc build ./dist/index.js && cp action.yml dist","clean":"rm -rf dist"},"dependencies":{"@actions/core":"^1.8.1","axios":"^0.27.2"},"devDependencies":{"@types/node":"^16.4.1","@vercel/ncc":"^0.33.4","typescript":"^4.6.4"}}');
 
 /***/ }),
 
