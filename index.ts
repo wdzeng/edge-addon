@@ -200,11 +200,7 @@ function handleError(error: unknown): void {
     if (error.response) {
       // Got response from Edge Publish API server with status code 4XX or 5XX
       core.setFailed('Edge Publish API server responses with error code: ' + error.response.status)
-      if (typeof (error.response.data) === 'string') {
-        core.setFailed(error.response.data)
-      } else {
-        core.setFailed(JSON.stringify(error.response.data))
-      }
+      core.setFailed(typeof (error.response.data) === 'string' ? error.response.data : JSON.stringify(error.response.data))
     }
     core.setFailed(error.message)
     return
@@ -231,9 +227,6 @@ async function main() {
 
   core.debug('Using product ID: ' + productId)
   core.debug('Using zip file path: ' + zipPath)
-  core.debug('Using client id: ' + clientId)
-  core.debug('Using client secret: ' + clientSecret)
-  core.debug('Using access url: ' + accessTokenUrl)
 
   try {
     await run(productId, zipPath, clientId, clientSecret, accessTokenUrl)
