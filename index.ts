@@ -212,13 +212,14 @@ function handleError(error: unknown): void {
 
   // Unknown error
   if (error instanceof Error) {
-    core.setFailed('Unknown error occurred.')
-    core.setFailed(error)
+    core.setFailed('Unknown error occurred: ' + error.message)
+    core.debug(JSON.stringify(error))
     return
   }
 
   // Unknown error type
   core.setFailed('Unknown error occurred.')
+  core.debug(JSON.stringify(error))
 }
 
 async function main() {
