@@ -1,7 +1,7 @@
 {
   "name": "edge-addon",
   "description": "Publish to Microsoft Edge Add-ons.",
-  "version": "v1.0.2",
+  "version": "v1.0.3",
   "author": "Hyperbola",
   "private": true,
   "repository": {
