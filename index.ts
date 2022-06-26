@@ -200,6 +200,11 @@ function handleError(error: unknown): void {
       // Got response from Edge Publish API server with status code 4XX or 5XX
       core.setFailed('Edge Publish API server responses with error code: ' + error.response.status)
       core.setFailed(error.response.data)
+      if (typeof (error.response.data) === 'string') {
+        core.setFailed(error.response.data)
+      } else {
+        core.setFailed(JSON.stringify(error.response.data))
+      }
     }
     core.setFailed(error.message)
     return
