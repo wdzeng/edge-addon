@@ -197,8 +197,8 @@ function handleError(error: unknown): void {
   // HTTP error
   if (error instanceof AxiosError) {
     if (error.response) {
-      // Got response from Firefox API server with status code 4XX or 5XX
-      core.setFailed('Firefox API server responses with error code: ' + error.response.status)
+      // Got response from Edge Publish API server with status code 4XX or 5XX
+      core.setFailed('Edge Publish API server responses with error code: ' + error.response.status)
       core.setFailed(error.response.data)
     }
     core.setFailed(error.message)
