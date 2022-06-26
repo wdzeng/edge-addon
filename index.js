@@ -127,7 +127,7 @@ async function sendSubmissionRequest(productId, token) {
         core.setFailed('Submission request not accepted.');
         core.debug('Error code: ' + errorCode);
     }
-    core.debug(JSON.stringify(response.data));
+    core.debug(typeof (response.data) === 'string' ? response.data : JSON.stringify(response.data));
     if (errorCode === undefined || errorCode === null) {
         // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-the-publish-call-fails-with-an-irrecoverable-failure
         // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-the-publish-call-fails-with-an-unexpected-failure
@@ -193,13 +193,7 @@ function handleError(error) {
         if (error.response) {
             // Got response from Edge Publish API server with status code 4XX or 5XX
             core.setFailed('Edge Publish API server responses with error code: ' + error.response.status);
-            core.setFailed(error.response.data);
-            if (typeof (error.response.data) === 'string') {
-                core.setFailed(error.response.data);
-            }
-            else {
-                core.setFailed(JSON.stringify(error.response.data));
-            }
+            core.setFailed(typeof (error.response.data) === 'string' ? error.response.data : JSON.stringify(error.response.data));
         }
         core.setFailed(error.message);
         return;
@@ -222,9 +216,6 @@ async function main() {
     const accessTokenUrl = core.getInput('access-token-url', { required: true });
     core.debug('Using product ID: ' + productId);
     core.debug('Using zip file path: ' + zipPath);
-    core.debug('Using client id: ' + clientId);
-    core.debug('Using client secret: ' + clientSecret);
-    core.debug('Using access url: ' + accessTokenUrl);
     try {
         await run(productId, zipPath, clientId, clientSecret, accessTokenUrl);
     }
@@ -7229,7 +7220,7 @@ module.exports = require("zlib");
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"edge-addon","description":"Publish to Microsoft Edge Add-ons.","version":"v1.0.2","author":"Hyperbola","private":true,"repository":{"type":"git","url":"git+https://github.com/wdzeng/edge-addon"},"scripts":{"build":"tsc && ncc build ./dist/index.js && cp action.yml dist","clean":"rm -rf dist"},"dependencies":{"@actions/core":"^1.8.1","axios":"^0.27.2"},"devDependencies":{"@types/node":"^16.4.1","@vercel/ncc":"^0.33.4","typescript":"^4.6.4"}}');
+module.exports = JSON.parse('{"name":"edge-addon","description":"Publish to Microsoft Edge Add-ons.","version":"v1.0.3","author":"Hyperbola","private":true,"repository":{"type":"git","url":"git+https://github.com/wdzeng/edge-addon"},"scripts":{"build":"tsc && ncc build ./dist/index.js && cp action.yml dist","clean":"rm -rf dist"},"dependencies":{"@actions/core":"^1.8.1","axios":"^0.27.2"},"devDependencies":{"@types/node":"^16.4.1","@vercel/ncc":"^0.33.4","typescript":"^4.6.4"}}');
 
 /***/ }),
 
