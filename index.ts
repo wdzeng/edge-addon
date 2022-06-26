@@ -121,7 +121,7 @@ async function sendSubmissionRequest(productId: string, token: string) {
     core.debug('Error code: ' + errorCode)
   }
 
-  core.debug(JSON.stringify(response.data))
+  core.debug(typeof (response.data) === 'string' ? response.data : JSON.stringify(response.data))
 
   if (errorCode === undefined || errorCode === null) {
     // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-the-publish-call-fails-with-an-irrecoverable-failure
