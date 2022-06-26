@@ -1,0 +1,24 @@
+{
+    "name": "edge-addon",
+    "description": "Publish to Microsoft Edge Add-ons.",
+    "version": "v1.0.2",
+    "author": "Hyperbola",
+    "private": true,
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/wdzeng/edge-addon"
+    },
+    "scripts": {
+        "build": "tsc && ncc build ./dist/index.js && cp action.yml dist",
+        "clean": "rm -rf dist"
+    },
+    "dependencies": {
+        "@actions/core": "^1.8.1",
+        "axios": "^0.27.2"
+    },
+    "devDependencies": {
+        "@types/node": "^16.4.1",
+        "@vercel/ncc": "^0.33.4",
+        "typescript": "^4.6.4"
+    }
+}
