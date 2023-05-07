@@ -178,7 +178,7 @@ async function sendSubmissionRequest(productId: string, token: string) {
   process.exit(1)
 }
 
-async function run(productId: string, zipPath: string, clientId: string, clientSecret: string, accessUrl: string): Promise<void> {
+async function run(productId: string, zipPath: string, clientId: string, clientSecret: string, accessUrl: string, uploadOnly: boolean): Promise<void> {
   core.info('Start to publish edge addon.')
 
   const token = await getAccessToken(clientId, clientSecret, accessUrl)
@@ -189,9 +189,14 @@ async function run(productId: string, zipPath: string, clientId: string, clientS
     return
   }
 
-  await sendSubmissionRequest(productId, token)
+  if (!uploadOnly) { // Do we need to publish the extension?
+    await sendSubmissionRequest(productId, token)
+    core.info('Addon published.')
+  }
+  else {
+    core.info('Addon uploaded.')
+  }
 
-  core.info('Addon published.')
 }
 
 function handleError(error: unknown): void {
@@ -224,12 +229,13 @@ async function main() {
   const clientId = core.getInput('client-id', { required: true })
   const clientSecret = core.getInput('client-secret', { required: true })
   const accessTokenUrl = core.getInput('access-token-url', { required: true })
+  const uploadOnly = core.getBooleanInput('upload-only')
 
   core.debug('Using product ID: ' + productId)
   core.debug('Using zip file path: ' + zipPath)
 
   try {
-    await run(productId, zipPath, clientId, clientSecret, accessTokenUrl)
+    await run(productId, zipPath, clientId, clientSecret, accessTokenUrl, uploadOnly)
   } catch (e: unknown) {
     handleError(e)
   }
