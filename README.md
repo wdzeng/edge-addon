@@ -27,6 +27,7 @@ All options are required.
 - `client-id`: your API client ID.
 - `client-secret`: your API client secret.
 - `access-token-url`: your access token URL.
+- `upload-only`: (boolean) `true` indicates this extension will be uploaded without publishing (you'll have to publish it manually); default `false`.
 
 Example:
 

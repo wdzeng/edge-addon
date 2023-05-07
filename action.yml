@@ -18,6 +18,10 @@ inputs:
   access-token-url:
     description: Edge publish API access token URL.
     required: true
+  upload-only:
+    description: Upload the extension without publishing. Default to false.
+    required: false
+    default: "false"
 
 runs:
   using: node16
