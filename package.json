@@ -20,5 +20,6 @@
     "@types/node": "^16.18.31",
     "@vercel/ncc": "^0.36.1",
     "typescript": "^5.0.4"
-  }
+  },
+  "license": "MIT"
 }
