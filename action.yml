@@ -1,5 +1,5 @@
 name: Publish Edge Add-on
-author: Hyperbola
+author: hyperbola
 description: Publish addon onto Edge Add-ons
 
 inputs:
