@@ -1,6 +1,8 @@
-import fs from 'fs'
-import axios, { AxiosError } from 'axios'
+import fs from 'node:fs'
+
 import * as core from '@actions/core'
+import axios, { AxiosError } from 'axios'
+
 import { version } from './package.json'
 
 const noErrMsg = 'The API server does not provide any error message.'
@@ -8,7 +10,11 @@ const noErrDetails = 'The API server does not provide any error details.'
 
 // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api
 
-async function getAccessToken(clientId: string, clientSecret: string, accessTokenUrl: string): Promise<string> {
+async function getAccessToken(
+  clientId: string,
+  clientSecret: string,
+  accessTokenUrl: string
+): Promise<string> {
   core.info('Start to get access token.')
 
   // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api#retrieving-the-access-token
@@ -18,14 +24,11 @@ async function getAccessToken(clientId: string, clientSecret: string, accessToke
   formData.append('client_secret', clientSecret)
   formData.append('grant_type', 'client_credentials')
 
-  const response = await axios.post(
-    accessTokenUrl,
-    formData,
-  )
+  const response = await axios.post(accessTokenUrl, formData)
 
   const accessToken = response.data.access_token
   core.info('Access token got.')
-  core.debug('Access token: ' + accessToken)
+  core.debug(`Access token: ${accessToken}`)
   return accessToken
 }
 
@@ -36,15 +39,13 @@ async function uploadPackage(productId: string, zipPath: string, token: string):
   // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#upload-a-package-to-update-an-existing-submission
   let url = `https://api.addons.microsoftedge.microsoft.com/v1/products/${productId}/submissions/draft/package`
   const zipStream = fs.createReadStream(zipPath)
-  let response = await axios.post(
-    url,
-    zipStream,
-    { headers: { 'Content-Type': 'application/zip', Authorization: `Bearer ${token}` } }
-  )
+  let response = await axios.post(url, zipStream, {
+    headers: { 'Content-Type': 'application/zip', 'Authorization': `Bearer ${token}` }
+  })
 
   const operationId = response.headers.location
   core.info('Package uploaded.')
-  core.debug('Operation ID: ' + operationId)
+  core.debug(`Operation ID: ${operationId}`)
 
   // Wait until package validated
   // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api#checking-the-status-of-a-package-upload
@@ -71,9 +72,11 @@ async function uploadPackage(productId: string, zipPath: string, token: string):
   }
 
   // Validation failed.
-  core.setFailed('Validation failed: ' + response.data.errorCode)
+  core.setFailed(`Validation failed: ${response.data.errorCode}`)
   core.setFailed(response.data.message)
-  response.data.errors.forEach((e: unknown) => core.setFailed(JSON.stringify(e)))
+  response.data.errors.forEach((e: unknown) => {
+    core.setFailed(JSON.stringify(e))
+  })
   return false
 }
 
@@ -87,14 +90,14 @@ async function sendSubmissionRequest(productId: string, token: string) {
   core.info('Submission request sent.')
 
   core.info('Start to check if submission request is accepted.')
-  core.debug('Operation ID: ' + operationId)
+  core.debug(`Operation ID: ${operationId}`)
   // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#check-the-publishing-status
   url = `https://api.addons.microsoftedge.microsoft.com/v1/products/${productId}/submissions/operations/${operationId}`
   let status: string
   while (true) {
     response = await axios(url, { headers: { Authorization: `Bearer ${token}` } })
     status = response.data.status
-    core.debug('Status: ' + status)
+    core.debug(`Status: ${status}`)
 
     if (status !== 'InProgress') {
       break
@@ -114,14 +117,13 @@ async function sendSubmissionRequest(productId: string, token: string) {
   const errorCode = response.data.errorCode as null | undefined | string
   const errors = response.data.errors as null | undefined | unknown[]
   if (errorCode) {
-    core.setFailed('Submission request not accepted: ' + errorCode)
-  }
-  else {
+    core.setFailed(`Submission request not accepted: ${errorCode}`)
+  } else {
     core.setFailed('Submission request not accepted.')
-    core.debug('Error code: ' + errorCode)
+    core.debug(`Error code: ${errorCode}`)
   }
 
-  core.debug(typeof (response.data) === 'string' ? response.data : JSON.stringify(response.data))
+  core.debug(typeof response.data === 'string' ? response.data : JSON.stringify(response.data))
 
   if (errorCode === undefined || errorCode === null) {
     // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-the-publish-call-fails-with-an-irrecoverable-failure
@@ -134,51 +136,64 @@ async function sendSubmissionRequest(productId: string, token: string) {
   }
 
   switch (errorCode) {
-    case 'SubmissionValidationError':
+    case 'SubmissionValidationError': {
       // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-there-are-validation-errors-in-submission
       core.setFailed(response.data.message || noErrMsg)
       // TODO not sure if errors is list of string
       if (errors) {
-        errors.forEach((e: unknown) => core.setFailed(JSON.stringify(e)))
-      }
-      else {
+        errors.forEach((e: unknown) => {
+          core.setFailed(JSON.stringify(e))
+        })
+      } else {
         core.setFailed(noErrDetails)
       }
       break
+    }
 
-    case 'ModuleStateUnPublishable':
+    case 'ModuleStateUnPublishable': {
       // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-where-any-of-the-modules-are-invalid
       core.setFailed(response.data.message || noErrMsg)
       // TODO not sure if the errors is of length 1
       if (errors) {
-        errors.forEach((e: unknown) => core.setFailed(JSON.stringify(e)))
-      }
-      else {
+        errors.forEach((e: unknown) => {
+          core.setFailed(JSON.stringify(e))
+        })
+      } else {
         core.setFailed(noErrDetails)
       }
       break
+    }
 
     case 'UnpublishInProgress':
     case 'InProgressSubmission':
     case 'NoModulesUpdated':
-    case 'CreateNotAllowed':
+    case 'CreateNotAllowed': {
       // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-there-is-an-ongoing-unpublished-submission-for-the-same-product
       // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-there-is-an-in-review-submission-for-the-same-product
       // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-there-is-nothing-new-to-be-published
       // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-when-a-new-product-is-published
       core.setFailed(response.data.message || noErrMsg)
       break
+    }
 
-    default:
-      core.warning('Get unexpected error code: ' + errorCode)
+    default: {
+      core.warning(`Get unexpected error code: ${errorCode}`)
       core.setFailed(response.data.message || noErrMsg)
       break
+    }
   }
 
   process.exit(1)
 }
 
-async function run(productId: string, zipPath: string, clientId: string, clientSecret: string, accessUrl: string, uploadOnly: boolean): Promise<void> {
+async function run(
+  productId: string,
+  zipPath: string,
+  clientId: string,
+  clientSecret: string,
+  accessUrl: string,
+  uploadOnly: boolean
+): Promise<void> {
   core.info('Start to publish edge addon.')
 
   const token = await getAccessToken(clientId, clientSecret, accessUrl)
@@ -189,14 +204,13 @@ async function run(productId: string, zipPath: string, clientId: string, clientS
     return
   }
 
-  if (!uploadOnly) { // Do we need to publish the extension?
+  if (uploadOnly) {
+    core.info('Addon uploaded.')
+  } else {
+    // Do we need to publish the extension?
     await sendSubmissionRequest(productId, token)
     core.info('Addon published.')
   }
-  else {
-    core.info('Addon uploaded.')
-  }
-
 }
 
 function handleError(error: unknown): void {
@@ -204,8 +218,12 @@ function handleError(error: unknown): void {
   if (error instanceof AxiosError) {
     if (error.response) {
       // Got response from Edge Publish API server with status code 4XX or 5XX
-      core.setFailed('Edge Publish API server responses with error code: ' + error.response.status)
-      core.setFailed(typeof (error.response.data) === 'string' ? error.response.data : JSON.stringify(error.response.data))
+      core.setFailed(`Edge Publish API server responses with error code: ${error.response.status}`)
+      core.setFailed(
+        typeof error.response.data === 'string'
+          ? error.response.data
+          : JSON.stringify(error.response.data)
+      )
     }
     core.setFailed(error.message)
     return
@@ -213,7 +231,7 @@ function handleError(error: unknown): void {
 
   // Unknown error
   if (error instanceof Error) {
-    core.setFailed('Unknown error occurred: ' + error.message)
+    core.setFailed(`Unknown error occurred: ${error.message}`)
     core.debug(JSON.stringify(error))
     return
   }
@@ -231,8 +249,8 @@ async function main() {
   const accessTokenUrl = core.getInput('access-token-url', { required: true })
   const uploadOnly = core.getBooleanInput('upload-only')
 
-  core.debug('Using product ID: ' + productId)
-  core.debug('Using zip file path: ' + zipPath)
+  core.debug(`Using product ID: ${productId}`)
+  core.debug(`Using zip file path: ${zipPath}`)
 
   try {
     await run(productId, zipPath, clientId, clientSecret, accessTokenUrl, uploadOnly)
