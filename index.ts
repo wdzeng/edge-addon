@@ -3,8 +3,6 @@ import fs from 'node:fs'
 import * as core from '@actions/core'
 import axios, { AxiosError } from 'axios'
 
-import { version } from './package.json'
-
 const noErrMsg = 'The API server does not provide any error message.'
 const noErrDetails = 'The API server does not provide any error details.'
 
@@ -259,5 +257,4 @@ async function main() {
   }
 }
 
-core.info(`Start edge addon action ${version}.`)
 main()
