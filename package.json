@@ -13,6 +13,8 @@
   "scripts": {
     "build": "pnpm clean && pnpm transpile && cp action.yml dist",
     "transpile": "esbuild src/index.ts --target=node16 --platform=node --minify --bundle --outfile=dist/index.cjs",
+    "test": "pnpm clean && pnpm transpile:test && node -r dotenv/config dist/test/index.cjs dotenv_config_path=test/.env.local",
+    "transpile:test": "esbuild test/index.ts --platform=node --target=node16 --minify --bundle --outfile=dist/test/index.cjs",
     "clean": "rm -rf dist",
     "lint": "eslint --fix index.ts"
   },
@@ -22,6 +24,7 @@
   },
   "devDependencies": {
     "@types/node": "^16.18.31",
+    "dotenv": "^16.3.1",
     "esbuild": "^0.19.2",
     "eslint": "^8.48.0",
     "eslint-config-wdzeng": "github:wdzeng/eslint-config#semver:^0.4.4",

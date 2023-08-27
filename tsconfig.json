@@ -17,5 +17,5 @@
     "strict": true,
     "alwaysStrict": true
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "test/**/*.ts"]
 }
