@@ -5,19 +5,17 @@
     "module": "es2022",
     "moduleResolution": "bundler",
     "esModuleInterop": true,
-    "lib": [
-      "ES2022"
-    ],
+    "lib": ["ES2022"],
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    },
     // Completeness and emit options.
-    "removeComments": true,
-    "newLine": "lf",
     "skipLibCheck": true,
     "verbatimModuleSyntax": true,
     // Type checking options.
     "strict": true,
     "alwaysStrict": true
   },
-  "include": [
-    "index.ts"
-  ]
+  "include": ["src/**/*.ts"]
 }

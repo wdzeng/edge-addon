@@ -1,0 +1,44 @@
+import * as core from '@actions/core'
+
+import {
+  getAccessToken,
+  sendPackagePublishingRequest,
+  uploadPackage,
+  waitUntilPackagePublished,
+  waitUntilPackageValidated
+} from '@/edge-addon-utils'
+import { handleError } from '@/error'
+
+async function run(
+  productId: string,
+  zipPath: string,
+  clientId: string,
+  clientSecret: string,
+  accessUrl: string,
+  uploadOnly: boolean
+): Promise<void> {
+  const token = await getAccessToken(clientId, clientSecret, accessUrl)
+  const uploadOperationId = await uploadPackage(productId, zipPath, token)
+  await waitUntilPackageValidated(productId, token, uploadOperationId)
+  if (!uploadOnly) {
+    const publishingOperationId = await sendPackagePublishingRequest(productId, token)
+    await waitUntilPackagePublished(productId, token, publishingOperationId)
+  }
+}
+
+async function main() {
+  const productId = core.getInput('product-id', { required: true })
+  const zipPath = core.getInput('zip-path', { required: true })
+  const clientId = core.getInput('client-id', { required: true })
+  const clientSecret = core.getInput('client-secret', { required: true })
+  const accessTokenUrl = core.getInput('access-token-url', { required: true })
+  const uploadOnly = core.getBooleanInput('upload-only')
+
+  try {
+    await run(productId, zipPath, clientId, clientSecret, accessTokenUrl, uploadOnly)
+  } catch (e: unknown) {
+    handleError(e)
+  }
+}
+
+void main()

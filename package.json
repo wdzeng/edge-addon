@@ -11,7 +11,7 @@
   "packageManager": "pnpm@8.7.0",
   "scripts": {
     "build": "pnpm clean && pnpm transpile && cp action.yml dist",
-    "transpile": "esbuild index.ts --target=node16 --platform=node --minify --bundle --outfile=dist/index.cjs",
+    "transpile": "esbuild src/index.ts --target=node16 --platform=node --minify --bundle --outfile=dist/index.cjs",
     "clean": "rm -rf dist",
     "lint": "eslint --fix index.ts"
   },
