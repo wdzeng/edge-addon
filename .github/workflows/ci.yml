@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  workflow_dispatch:
+
+jobs:
+  unittests:
+    name: Run unittests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - uses: pnpm/action-setup@v2
+        with:
+          run_install: true
+      - env:
+          TEST_CLIENT_ID: ${{ secrets.TEST_CLIENT_ID }}
+          TEST_CLIENT_SECRET: ${{ secrets.TEST_CLIENT_SECRET }}
+          TEST_ACCESS_TOKEN_URL: ${{ secrets.TEST_ACCESS_TOKEN_URL }}
+          TEST_PRODUCT_ID: ${{ secrets.TEST_PRODUCT_ID }}
+        run: pnpm test
+  publish:
+    name: Publish action
+    needs: unittests
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: wdzeng/action-of-action@v3
