@@ -27,11 +27,22 @@ async function run(
 }
 
 async function main() {
-  const productId = core.getInput('product-id', { required: true })
-  const zipPath = core.getInput('zip-path', { required: true })
   const clientId = core.getInput('client-id', { required: true })
   const clientSecret = core.getInput('client-secret', { required: true })
   const accessTokenUrl = core.getInput('access-token-url', { required: true })
+
+  const checkCredentialsOnly = core.getBooleanInput('check-credentials-only')
+  if (checkCredentialsOnly) {
+    try {
+      await getAccessToken(clientId, clientSecret, accessTokenUrl)
+    } catch (e: unknown) {
+      handleError(e)
+    }
+    return
+  }
+
+  const productId = core.getInput('product-id', { required: true })
+  const zipPath = core.getInput('zip-path', { required: true })
   const uploadOnly = core.getBooleanInput('upload-only')
 
   try {

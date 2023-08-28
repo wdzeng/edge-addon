@@ -5,10 +5,10 @@ description: Publish addon onto Edge Add-ons
 inputs:
   product-id:
     description: Product ID of the add-on.
-    required: true
+    required: false
   zip-path:
     description: Path to the zip file of the add-on.
-    required: true
+    required: false
   client-id:
     description: Edge publish API client ID.
     required: true
@@ -20,6 +20,10 @@ inputs:
     required: true
   upload-only:
     description: Upload the extension without publishing. Default to false.
+    required: false
+    default: "false"
+  check-credentials-only:
+    description: Check if the credentials are valid. Default to false.
     required: false
     default: "false"
 

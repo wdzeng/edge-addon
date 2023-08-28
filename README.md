@@ -22,7 +22,7 @@ for how to generate API keys and discover access token url.
 
 ## Usage
 
-All options are required.
+Unless noted with a default value, all options are required.
 
 - `product-id`: the id of your add-on.
 - `zip-path`: path to the zip file to be uploaded.
@@ -30,7 +30,10 @@ All options are required.
 - `client-secret`: your API client secret.
 - `access-token-url`: your access token URL.
 - `upload-only`: (boolean) `true` indicates this extension will be uploaded without publishing
-  (you'll have to publish it manually); default `false`.
+  (you'll have to publish it manually); default to `false`.
+- `check-credentials-only` : (boolean) only test if given credentials are working; do not upload
+  or publish the extension; enabling this option will ignore `product-id`, `zip-path`, and
+  `upload-only` and make these options optional; default to `false`.
 
 Example:
 
