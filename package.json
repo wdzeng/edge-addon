@@ -12,9 +12,9 @@
   "packageManager": "pnpm@8.7.6",
   "scripts": {
     "build": "pnpm clean && pnpm transpile && cp action.yml dist",
-    "transpile": "esbuild src/index.ts --target=node16 --platform=node --minify --bundle --outfile=dist/index.cjs",
+    "transpile": "esbuild src/index.ts --target=node20 --platform=node --minify --bundle --outfile=dist/index.cjs",
     "test": "pnpm clean && pnpm transpile:test && node -r dotenv/config dist/test/index.cjs dotenv_config_path=test/.env.local",
-    "transpile:test": "esbuild test/index.ts --platform=node --target=node16 --minify --bundle --outfile=dist/test/index.cjs",
+    "transpile:test": "esbuild test/index.ts --platform=node --target=node20 --minify --bundle --outfile=dist/test/index.cjs",
     "clean": "rm -rf dist",
     "lint": "eslint --fix index.ts"
   },
@@ -23,7 +23,7 @@
     "axios": "^1.5.0"
   },
   "devDependencies": {
-    "@types/node": "^16.18.31",
+    "@types/node": "^20.5.9",
     "dotenv": "^16.3.1",
     "esbuild": "^0.19.3",
     "eslint": "^8.50.0",
