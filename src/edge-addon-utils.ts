@@ -2,7 +2,7 @@ import assert from 'node:assert'
 import fs from 'node:fs'
 
 import * as core from '@actions/core'
-import axios, { AxiosError, type AxiosResponse } from 'axios'
+import axios, { AxiosError } from 'axios'
 
 import type { AccessTokenErrorResponse, AccessTokenSuccessResponse } from '@/api-types/access-token'
 import type { ExpectedStatusResponse, StatusResponse } from '@/api-types/status'
@@ -16,6 +16,8 @@ import {
   getStringOrError,
   stringify
 } from '@/error'
+
+import type { AxiosResponse } from 'axios'
 
 const WAIT_DELAY = 10 * 1000 // 10 seconds
 const MAX_WAIT_TIME = 10 * 60 * 1000 // 10 minutes

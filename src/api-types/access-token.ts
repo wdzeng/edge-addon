@@ -1,5 +1,3 @@
-export type AccessTokenResponse = AccessTokenSuccessResponse | AccessTokenErrorResponse
-
 // https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow#successful-response-1
 export interface AccessTokenSuccessResponse {
   token_type: string
@@ -17,3 +15,5 @@ export interface AccessTokenErrorResponse {
   trace_id: string
   correlation_id: string
 }
+
+export type AccessTokenResponse = AccessTokenSuccessResponse | AccessTokenErrorResponse

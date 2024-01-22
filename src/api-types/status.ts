@@ -8,17 +8,10 @@
 // The API documentation sucks. It does not provide correct response type. I guess upload API and
 // publishing API share the same response type.
 
-export type StatusResponse = UnexpectedStatusResponse | ExpectedStatusResponse
-
 interface UnexpectedStatusResponse {
   id: string
   message: string
 }
-
-export type ExpectedStatusResponse =
-  | SuccessfulStatusResponse
-  | FailedStatusResponse
-  | InProgressStatusResponse
 
 interface SuccessfulStatusResponse {
   id: string
@@ -49,3 +42,10 @@ export interface FailedStatusResponse {
   errorCode: null | string
   errors: null | { message: string }[]
 }
+
+export type ExpectedStatusResponse =
+  | SuccessfulStatusResponse
+  | FailedStatusResponse
+  | InProgressStatusResponse
+
+export type StatusResponse = UnexpectedStatusResponse | ExpectedStatusResponse
