@@ -39,7 +39,8 @@
       "has": "npm:@nolyfill/has@latest",
       "object.fromentries": "npm:@nolyfill/object.fromentries@latest",
       "object.groupby": "npm:@nolyfill/object.groupby@latest",
-      "object.values": "npm:@nolyfill/object.values@latest"
+      "object.values": "npm:@nolyfill/object.values@latest",
+      "hasown": "npm:@nolyfill/hasown@latest"
     }
   }
 }
