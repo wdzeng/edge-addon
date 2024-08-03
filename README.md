@@ -6,26 +6,26 @@
 This action publishes your Edge add-on onto [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/Microsoft-Edge-Extensions-Home)
 using the [Microsoft Edge Add-ons API v1](https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api).
 
-This action can only publish new version of an existing add-on. Publishing a new add-on is not
+This action can only publish a new version of an existing add-on. Publishing a new add-on is not
 supported.
 
 ## Prerequisites
 
-Following items are required before publishing your Edge add-on:
+Following items are required before you publishing your Edge add-on:
 
-- A zip file to be uploaded.
+- A zip file to upload.
 - An API client ID and secret.
 - An access token url.
 
 Please refer to this [tutorial](https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api#before-you-begin)
-for how to generate API keys and discover access token url.
+for how to generate API keys and discover the access token url.
 
 ## Usage
 
 Unless noted with a default value, all options are required.
 
 - `product-id`: the id of your add-on.
-- `zip-path`: path to the zip file to be uploaded.
+- `zip-path`: path to the zip file to upload.
 - `client-id`: your API client ID.
 - `client-secret`: your API client secret.
 - `access-token-url`: your access token URL.
