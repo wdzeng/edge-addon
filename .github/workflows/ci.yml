@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  unittests:
-    name: Run unittests
+  test:
+    name: Run tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +28,7 @@ jobs:
         run: pnpm test
   publish:
     name: Publish action
-    needs: unittests
+    needs: test
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
