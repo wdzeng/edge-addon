@@ -1,5 +1,5 @@
-import { uploadPackage, waitUntilPackageValidated } from '@/edge-addon-utils'
 import { handleError } from '@/error'
+import { uploadPackage, waitUntilPackageValidated } from '@/lib'
 
 function requireEnvironmentVariable(key: string): string {
   const value = process.env[key]

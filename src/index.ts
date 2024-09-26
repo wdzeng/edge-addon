@@ -1,12 +1,12 @@
 import * as core from '@actions/core'
 
+import { handleError } from '@/error'
 import {
   sendPackagePublishingRequest,
   uploadPackage,
   waitUntilPackagePublished,
   waitUntilPackageValidated
-} from '@/edge-addon-utils'
-import { handleError } from '@/error'
+} from '@/lib'
 
 async function run(
   productId: string,
