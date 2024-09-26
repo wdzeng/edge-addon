@@ -1,4 +1,4 @@
-# Edge Addon
+# Edge Add-on
 
 [![version](https://img.shields.io/github/v/release/wdzeng/edge-addon)](https://github.com/wdzeng/edge-addon/releases/latest)
 [![license](https://img.shields.io/github/license/wdzeng/edge-addon?color=red)](https://github.com/wdzeng/edge-addon/blob/main/LICENSE)

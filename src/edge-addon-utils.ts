@@ -181,8 +181,8 @@ export async function waitUntilPackagePublished(
   const url = `https://api.addons.microsoftedge.microsoft.com/v1/products/${productId}/submissions/operations/${operationId}`
   const ok = await waitUntilOperationSucceeded(url, apiKey, clientId)
   if (!ok) {
-    core.setFailed('Failed to publish addon.')
+    core.setFailed('Failed to publish the add-on.')
     process.exit(ERR_PUBLISHING_PACKAGE)
   }
-  core.info('Addon published.')
+  core.info('Add-on published.')
 }

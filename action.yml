@@ -1,6 +1,6 @@
 name: Publish Edge Add-on
 author: hyperbola
-description: Publish addon onto Edge Add-ons
+description: Publish add-on onto Edge Add-ons
 
 inputs:
   product-id:
