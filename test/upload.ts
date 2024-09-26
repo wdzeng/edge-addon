@@ -1,8 +1,6 @@
-import * as core from '@actions/core'
-
 import { handleError } from '@/error'
 import { uploadPackage, waitUntilPackageValidated } from '@/lib'
-import { isGitHubAction } from '@/utils'
+import { isGitHubAction, logger } from '@/utils'
 
 function getEnv(): {
   apiKey: string
@@ -14,7 +12,7 @@ function getEnv(): {
   const productId = process.env.TEST_PRODUCT_ID
   if (!apiKey || !clientId || !productId) {
     if (isGitHubAction()) {
-      core.setFailed(
+      logger.setFailed(
         'Environment variables TEST_API_KEY, TEST_CLIENT_ID and TEST_PRODUCT_ID are required. Did you set the secrets?'
       )
       process.exit(1)

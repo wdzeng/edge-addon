@@ -1,7 +1,6 @@
 import assert from 'node:assert'
 import fs from 'node:fs'
 
-import * as core from '@actions/core'
 import axios from 'axios'
 
 import type { ExpectedStatusResponse, StatusResponse } from '@/api-types'
@@ -14,6 +13,7 @@ import {
   getStringOrError,
   stringify
 } from '@/error'
+import { logger } from '@/utils'
 
 import type { AxiosResponse } from 'axios'
 
@@ -26,8 +26,8 @@ function requireExpectedStatusResponse(
   if ('status' in res.data) {
     return
   }
-  core.debug(JSON.stringify(res.data))
-  core.setFailed('The API server does not provide status information.')
+  logger.debug(JSON.stringify(res.data))
+  logger.setFailed('The API server does not provide status information.')
   process.exit(RESPONSE_NO_STATUS)
 }
 
@@ -36,12 +36,12 @@ function getOperationIdFromResponse(response: AxiosResponse<StatusResponse>): st
 
   if ('location' in responseHeaders) {
     const operationId = responseHeaders.location as string
-    core.debug(`Operation ID: ${operationId}`)
+    logger.debug(`Operation ID: ${operationId}`)
     return operationId
   }
 
-  core.debug(JSON.stringify(responseHeaders))
-  core.setFailed('The API server does not provide location information.')
+  logger.debug(JSON.stringify(responseHeaders))
+  logger.setFailed('The API server does not provide location information.')
   return process.exit(RESPONSE_NO_LOCATION)
 }
 
@@ -58,7 +58,7 @@ async function waitUntilOperationSucceeded(
 
   const endTime = Date.now() + MAX_WAIT_TIME
   while (Date.now() < endTime) {
-    core.info('Checking if operation has succeeded.')
+    logger.info('Checking if operation has succeeded.')
 
     response = await axios<StatusResponse>(url, { headers })
     requireExpectedStatusResponse(response)
@@ -67,7 +67,7 @@ async function waitUntilOperationSucceeded(
       break
     }
 
-    core.info('Operation still in progress.')
+    logger.info('Operation still in progress.')
     await new Promise(res => setTimeout(res, WAIT_DELAY))
   }
 
@@ -78,7 +78,7 @@ async function waitUntilOperationSucceeded(
   }
 
   if (response.data.status === 'InProgress') {
-    core.setFailed('Operation timeout exceeded.')
+    logger.setFailed('Operation timeout exceeded.')
     process.exit(OPERATION_TIMEOUT_EXCEEDED)
   }
 
@@ -88,24 +88,24 @@ async function waitUntilOperationSucceeded(
   // different types, and we had better show a URL to the doc for users to check the details.
 
   if (response.data.message) {
-    core.setFailed(response.data.message)
+    logger.setFailed(response.data.message)
   }
 
   if (response.data.errorCode) {
-    core.setFailed(`Validation failed: ${response.data.errorCode}`)
+    logger.setFailed(`Validation failed: ${response.data.errorCode}`)
   } else {
-    core.setFailed('Validation failed. The API server does not provide any error code.')
+    logger.setFailed('Validation failed. The API server does not provide any error code.')
   }
 
   if (response.data.errors?.length) {
     for (const e of response.data.errors) {
-      core.setFailed(getStringOrError(e))
+      logger.setFailed(getStringOrError(e))
     }
   }
 
   if (!response.data.message && !response.data.errors?.length) {
-    core.debug(stringify(response.data))
-    core.setFailed('Validation failed. The API server does not provide any error message.')
+    logger.debug(stringify(response.data))
+    logger.setFailed('Validation failed. The API server does not provide any error message.')
   }
 
   return false
@@ -119,7 +119,7 @@ export async function uploadPackage(
 ): Promise<string> {
   // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#upload-a-package-to-update-an-existing-submission
   // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api?tabs=v1-1#uploading-a-package-to-update-an-existing-submission
-  core.info('Uploading package.')
+  logger.info('Uploading package.')
   const url = `https://api.addons.microsoftedge.microsoft.com/v1/products/${productId}/submissions/draft/package`
   const zipStream = fs.createReadStream(zipPath)
   const headers = {
@@ -129,7 +129,7 @@ export async function uploadPackage(
   }
   const response = await axios.post<never>(url, zipStream, { headers }) // 202 Accepted
   const operationId = getOperationIdFromResponse(response)
-  core.info('Package uploaded.')
+  logger.info('Package uploaded.')
   return operationId
 }
 
@@ -141,14 +141,14 @@ export async function waitUntilPackageValidated(
 ) {
   // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api?tabs=v1-1#checking-the-status-of-a-package-upload
   // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#check-the-status-of-a-package-upload
-  core.info('Waiting until upload request accepted.')
+  logger.info('Waiting until upload request accepted.')
   const url = `https://api.addons.microsoftedge.microsoft.com/v1/products/${productId}/submissions/draft/package/operations/${operationId}`
   const ok = await waitUntilOperationSucceeded(url, apiKey, clientId)
   if (!ok) {
-    core.setFailed('Package validation failed.')
+    logger.setFailed('Package validation failed.')
     process.exit(ERR_PACKAGE_VALIDATION)
   }
-  core.info('Validation succeeded.')
+  logger.info('Validation succeeded.')
 }
 
 export async function sendPackagePublishingRequest(
@@ -158,7 +158,7 @@ export async function sendPackagePublishingRequest(
 ): Promise<string> {
   // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#publish-the-product-draft-submission
   // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api?tabs=v1-1#publishing-the-submission
-  core.info('Sending publishing request.')
+  logger.info('Sending publishing request.')
   const url = `https://api.addons.microsoftedge.microsoft.com/v1/products/${productId}/submissions`
   const response = await axios.post<never>(
     url,
@@ -166,7 +166,7 @@ export async function sendPackagePublishingRequest(
     { headers: { 'Authorization': `ApiKey ${apiKey}`, 'X-ClientID': clientId } }
   )
   const operationId = getOperationIdFromResponse(response)
-  core.info('Publishing request sent.')
+  logger.info('Publishing request sent.')
   return operationId
 }
 
@@ -177,12 +177,12 @@ export async function waitUntilPackagePublished(
   operationId: string
 ) {
   // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#check-the-publishing-status
-  core.info('Waiting until publishing request accepted.')
+  logger.info('Waiting until publishing request accepted.')
   const url = `https://api.addons.microsoftedge.microsoft.com/v1/products/${productId}/submissions/operations/${operationId}`
   const ok = await waitUntilOperationSucceeded(url, apiKey, clientId)
   if (!ok) {
-    core.setFailed('Failed to publish the add-on.')
+    logger.setFailed('Failed to publish the add-on.')
     process.exit(ERR_PUBLISHING_PACKAGE)
   }
-  core.info('Add-on published.')
+  logger.info('Add-on published.')
 }

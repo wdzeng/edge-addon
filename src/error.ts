@@ -1,5 +1,6 @@
-import * as core from '@actions/core'
 import { AxiosError } from 'axios'
+
+import { logger } from '@/utils'
 
 export const ERR_UPLOADING_PACKAGE = 1
 export const ERR_PACKAGE_VALIDATION = 2
@@ -30,28 +31,28 @@ export function handleError(error: unknown): never {
   if (error instanceof AxiosError) {
     if (error.response) {
       // Got response from Microsoft Edge Add-ons API server (v1) with status code 4XX or 5XX.
-      core.setFailed(
+      logger.setFailed(
         `Microsoft Edge Add-ons API server (v1) responses with error code: ${error.response.status}`
       )
-      core.setFailed(
+      logger.setFailed(
         typeof error.response.data === 'string'
           ? error.response.data
           : JSON.stringify(error.response.data)
       )
     }
-    core.setFailed(error.message)
+    logger.setFailed(error.message)
   }
 
   // Unknown error.
   else if (error instanceof Error) {
-    core.setFailed(`Unknown error occurred: ${error.message}`)
-    core.debug(JSON.stringify(error))
+    logger.setFailed(`Unknown error occurred: ${error.message}`)
+    logger.debug(JSON.stringify(error))
   }
 
   // Unknown error type.
   else {
-    core.setFailed('Unknown error occurred.')
-    core.debug(JSON.stringify(error))
+    logger.setFailed('Unknown error occurred.')
+    logger.debug(JSON.stringify(error))
   }
 
   process.exit(UNKNOWN_ERROR)
