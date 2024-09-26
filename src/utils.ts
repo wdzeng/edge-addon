@@ -1,4 +1,18 @@
 import * as core from '@actions/core'
+import { globSync } from 'glob'
+
+export function tryResolvePath(pattern: string): string {
+  const foundFiles = globSync(pattern)
+
+  if (foundFiles.length < 1) {
+    throw new Error(`File not found: ${pattern}`)
+  }
+  if (foundFiles.length > 1) {
+    throw new Error(`Multiple files found: ${pattern}`)
+  }
+
+  return foundFiles[0]
+}
 
 export function isGitHubAction(): boolean {
   // https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables

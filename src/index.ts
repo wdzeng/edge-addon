@@ -7,6 +7,7 @@ import {
   waitUntilPackagePublished,
   waitUntilPackageValidated
 } from '@/lib'
+import { tryResolvePath } from '@/utils'
 
 async function run(
   productId: string,
@@ -28,10 +29,11 @@ async function main() {
   const clientId = core.getInput('client-id', { required: true })
 
   const productId = core.getInput('product-id', { required: true })
-  const zipPath = core.getInput('zip-path', { required: true })
+  let zipPath = core.getInput('zip-path', { required: true })
   const uploadOnly = core.getBooleanInput('upload-only')
 
   try {
+    zipPath = tryResolvePath(zipPath)
     await run(productId, zipPath, apiKey, clientId, uploadOnly)
   } catch (e: unknown) {
     handleError(e)
