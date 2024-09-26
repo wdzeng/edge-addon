@@ -25,7 +25,7 @@ for how to generate API keys and discover the access token url.
 Unless noted with a default value, all options are required.
 
 - `product-id`: the id of your add-on.
-- `zip-path`: path to the zip file to upload.
+- `zip-path`: path to the zip file to upload; may include a glob pattern (only one file must match).
 - `client-id`: your API client ID.
 - `client-secret`: your API client secret.
 - `access-token-url`: your access token URL.
