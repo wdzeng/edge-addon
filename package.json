@@ -19,28 +19,15 @@
   },
   "dependencies": {
     "@actions/core": "^1.10.1",
-    "axios": "^1.7.3"
+    "axios": "^1.7.7"
   },
   "devDependencies": {
-    "@types/node": "^20.11.26",
+    "@types/node": "^20.16.9",
     "dotenv": "^16.4.5",
-    "esbuild": "^0.23.0",
-    "eslint": "^8.57.0",
-    "eslint-config-wdzeng": "github:wdzeng/eslint-config#semver:^0.10.0",
+    "esbuild": "^0.24.0",
+    "eslint": "^8.57.1",
+    "eslint-config-wdzeng": "github:wdzeng/eslint-config#semver:^0.9.0",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4"
-  },
-  "pnpm": {
-    "overrides": {
-      "array-includes": "npm:@nolyfill/array-includes@^1",
-      "array.prototype.findlastindex": "npm:@nolyfill/array.prototype.findlastindex@^1",
-      "array.prototype.flat": "npm:@nolyfill/array.prototype.flat@^1",
-      "array.prototype.flatmap": "npm:@nolyfill/array.prototype.flatmap@^1",
-      "hasown": "npm:@nolyfill/hasown@^1",
-      "is-core-module": "npm:@nolyfill/is-core-module@^1",
-      "object.fromentries": "npm:@nolyfill/object.fromentries@^1",
-      "object.groupby": "npm:@nolyfill/object.groupby@^1",
-      "object.values": "npm:@nolyfill/object.values@^1"
-    }
   }
 }
