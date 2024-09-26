@@ -4,7 +4,7 @@ import fs from 'node:fs'
 import * as core from '@actions/core'
 import axios from 'axios'
 
-import type { ExpectedStatusResponse, StatusResponse } from '@/api-types/status'
+import type { ExpectedStatusResponse, StatusResponse } from '@/api-types'
 import {
   ERR_PACKAGE_VALIDATION,
   ERR_PUBLISHING_PACKAGE,
