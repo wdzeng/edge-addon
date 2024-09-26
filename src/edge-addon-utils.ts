@@ -1,5 +1,6 @@
 import assert from 'node:assert'
 import fs from 'node:fs'
+import { globSync } from "glob"
 
 import * as core from '@actions/core'
 import axios, { AxiosError } from 'axios'
@@ -203,4 +204,17 @@ export async function waitUntilPackagePublished(
     process.exit(ERR_PUBLISHING_PACKAGE)
   }
   core.info('Addon published.')
+}
+
+export function tryResolvePath(pattern: string): string {
+  const foundFiles = globSync(pattern)
+
+  if (foundFiles.length < 1) {
+    throw new Error(`File not found: ${pattern}`)
+  }
+  if (foundFiles.length > 1) {
+    throw new Error(`Multiple files found: ${pattern}`)
+  }
+
+  return foundFiles[0]
 }

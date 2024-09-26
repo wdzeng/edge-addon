@@ -3,6 +3,7 @@ import * as core from '@actions/core'
 import {
   getAccessToken,
   sendPackagePublishingRequest,
+  tryResolvePath,
   uploadPackage,
   waitUntilPackagePublished,
   waitUntilPackageValidated
@@ -42,10 +43,11 @@ async function main() {
   }
 
   const productId = core.getInput('product-id', { required: true })
-  const zipPath = core.getInput('zip-path', { required: true })
+  let zipPath = core.getInput('zip-path', { required: true })
   const uploadOnly = core.getBooleanInput('upload-only')
 
   try {
+    zipPath = tryResolvePath(zipPath)
     await run(productId, zipPath, clientId, clientSecret, accessTokenUrl, uploadOnly)
   } catch (e: unknown) {
     handleError(e)
