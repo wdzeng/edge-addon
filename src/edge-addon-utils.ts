@@ -82,6 +82,9 @@ async function waitUntilOperationSucceeded(url: string, token: string): Promise<
 
   // Here operation failed.
 
+  // TODO: Add more instruction about which failure type is. The API documentation explains much for
+  // different types, and we had better show a URL to the doc for users to check the details.
+
   if (response.data.message) {
     core.setFailed(response.data.message)
   }
