@@ -8,11 +8,15 @@
 // The API documentation sucks. It does not provide correct response type. I guess upload API and
 // publishing API share the same response type.
 
+// https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-the-publish-call-fails-with-an-unexpected-failure
+// https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-the-publish-call-fails-with-an-unexpected-failure
 interface UnexpectedStatusResponse {
   id: string
   message: string
 }
 
+// https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-the-publish-call-succeeds
+// https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#check-the-publishing-status
 interface SuccessfulStatusResponse {
   id: string
   createdTime: string // Date
@@ -23,6 +27,8 @@ interface SuccessfulStatusResponse {
   errors: null
 }
 
+// https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-the-operation-is-still-in-progress
+// https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#check-the-publishing-status
 interface InProgressStatusResponse {
   id: string
   createdTime: string // Date
@@ -33,6 +39,7 @@ interface InProgressStatusResponse {
   errors: null
 }
 
+// https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-the-operation-fails-with-errors
 export interface FailedStatusResponse {
   id: string
   createdTime: string // Date
