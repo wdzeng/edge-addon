@@ -2,12 +2,10 @@ import assert from 'node:assert'
 import fs from 'node:fs'
 
 import * as core from '@actions/core'
-import axios, { AxiosError } from 'axios'
+import axios from 'axios'
 
-import type { AccessTokenErrorResponse, AccessTokenSuccessResponse } from '@/api-types/access-token'
 import type { ExpectedStatusResponse, StatusResponse } from '@/api-types/status'
 import {
-  ERR_ACCESS_TOKEN,
   ERR_PACKAGE_VALIDATION,
   ERR_PUBLISHING_PACKAGE,
   OPERATION_TIMEOUT_EXCEEDED,
@@ -47,12 +45,16 @@ function getOperationIdFromResponse(response: AxiosResponse<StatusResponse>): st
   return process.exit(RESPONSE_NO_LOCATION)
 }
 
-async function waitUntilOperationSucceeded(url: string, token: string): Promise<boolean> {
-  // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#check-the-status-of-a-package-upload
-  // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#check-the-publishing-status
+async function waitUntilOperationSucceeded(
+  url: string,
+  apiKey: string,
+  clientId: string
+): Promise<boolean> {
+  // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#check-the-status-of-a-package-upload
+  // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#check-the-publishing-status
 
   let response: AxiosResponse<StatusResponse> | undefined = undefined
-  const headers = { Authorization: `Bearer ${token}` }
+  const headers = { 'Authorization': `ApiKey ${apiKey}`, 'X-ClientID': clientId }
 
   const endTime = Date.now() + MAX_WAIT_TIME
   while (Date.now() < endTime) {
@@ -109,50 +111,22 @@ async function waitUntilOperationSucceeded(url: string, token: string): Promise<
   return false
 }
 
-export async function getAccessToken(
-  clientId: string,
-  clientSecret: string,
-  accessTokenUrl: string
-): Promise<string> {
-  // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api#retrieving-the-access-token
-
-  core.info('Start to get access token.')
-
-  const formData = new URLSearchParams()
-  formData.append('client_id', clientId)
-  formData.append('scope', 'https://api.addons.microsoftedge.microsoft.com/.default')
-  formData.append('client_secret', clientSecret)
-  formData.append('grant_type', 'client_credentials')
-
-  let response: AxiosResponse<AccessTokenSuccessResponse>
-
-  try {
-    response = await axios.post<AccessTokenSuccessResponse>(accessTokenUrl, formData)
-  } catch (error: unknown) {
-    if (error instanceof AxiosError && error.response?.status === 400) {
-      const errorResponse = error.response.data as AccessTokenErrorResponse
-      core.debug(stringify(errorResponse))
-      core.setFailed(`Failed to get access token: ${errorResponse.error_description}`)
-      process.exit(ERR_ACCESS_TOKEN)
-    }
-    throw error
-  }
-
-  const accessToken = response.data.access_token
-  core.info('Access token received.')
-  return accessToken
-}
-
 export async function uploadPackage(
   productId: string,
   zipPath: string,
-  token: string
+  apiKey: string,
+  clientId: string
 ): Promise<string> {
-  // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api#uploading-a-package-to-update-an-existing-submission
+  // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#upload-a-package-to-update-an-existing-submission
+  // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api?tabs=v1-1#uploading-a-package-to-update-an-existing-submission
   core.info('Uploading package.')
   const url = `https://api.addons.microsoftedge.microsoft.com/v1/products/${productId}/submissions/draft/package`
   const zipStream = fs.createReadStream(zipPath)
-  const headers = { 'Content-Type': 'application/zip', 'Authorization': `Bearer ${token}` }
+  const headers = {
+    'Content-Type': 'application/zip',
+    'Authorization': `ApiKey ${apiKey}`,
+    'X-ClientID': clientId
+  }
   const response = await axios.post<never>(url, zipStream, { headers }) // 202 Accepted
   const operationId = getOperationIdFromResponse(response)
   core.info('Package uploaded.')
@@ -161,13 +135,15 @@ export async function uploadPackage(
 
 export async function waitUntilPackageValidated(
   productId: string,
-  token: string,
+  apiKey: string,
+  clientId: string,
   operationId: string
 ) {
-  // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#check-the-package-upload-status
+  // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api?tabs=v1-1#checking-the-status-of-a-package-upload
+  // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#check-the-status-of-a-package-upload
   core.info('Waiting until upload request accepted.')
   const url = `https://api.addons.microsoftedge.microsoft.com/v1/products/${productId}/submissions/draft/package/operations/${operationId}`
-  const ok = await waitUntilOperationSucceeded(url, token)
+  const ok = await waitUntilOperationSucceeded(url, apiKey, clientId)
   if (!ok) {
     core.setFailed('Package validation failed.')
     process.exit(ERR_PACKAGE_VALIDATION)
@@ -177,15 +153,17 @@ export async function waitUntilPackageValidated(
 
 export async function sendPackagePublishingRequest(
   productId: string,
-  token: string
+  apiKey: string,
+  clientId: string
 ): Promise<string> {
-  // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api#publishing-the-submission
+  // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#publish-the-product-draft-submission
+  // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api?tabs=v1-1#publishing-the-submission
   core.info('Sending publishing request.')
   const url = `https://api.addons.microsoftedge.microsoft.com/v1/products/${productId}/submissions`
   const response = await axios.post<never>(
     url,
     {}, // Empty body
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { 'Authorization': `ApiKey ${apiKey}`, 'X-ClientID': clientId } }
   )
   const operationId = getOperationIdFromResponse(response)
   core.info('Publishing request sent.')
@@ -194,13 +172,14 @@ export async function sendPackagePublishingRequest(
 
 export async function waitUntilPackagePublished(
   productId: string,
-  token: string,
+  apiKey: string,
+  clientId: string,
   operationId: string
 ) {
   // https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#check-the-publishing-status
   core.info('Waiting until publishing request accepted.')
   const url = `https://api.addons.microsoftedge.microsoft.com/v1/products/${productId}/submissions/operations/${operationId}`
-  const ok = await waitUntilOperationSucceeded(url, token)
+  const ok = await waitUntilOperationSucceeded(url, apiKey, clientId)
   if (!ok) {
     core.setFailed('Failed to publish addon.')
     process.exit(ERR_PUBLISHING_PACKAGE)

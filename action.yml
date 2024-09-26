@@ -9,21 +9,14 @@ inputs:
   zip-path:
     description: Path to the zip file of the add-on.
     required: false
+  api-key:
+    description: Edge publish API key.
+    required: true
   client-id:
     description: Edge publish API client ID.
     required: true
-  client-secret:
-    description: Edge publish API client secret.
-    required: true
-  access-token-url:
-    description: Edge publish API access token URL.
-    required: true
   upload-only:
     description: Upload the extension without publishing. Default to false.
-    required: false
-    default: "false"
-  check-credentials-only:
-    description: Check if the credentials are valid. Default to false.
     required: false
     default: "false"
 

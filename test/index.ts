@@ -1,4 +1,4 @@
-import { getAccessToken, uploadPackage, waitUntilPackageValidated } from '@/edge-addon-utils'
+import { uploadPackage, waitUntilPackageValidated } from '@/edge-addon-utils'
 import { handleError } from '@/error'
 
 function requireEnvironmentVariable(key: string): string {
@@ -10,16 +10,14 @@ function requireEnvironmentVariable(key: string): string {
 }
 
 async function main(): Promise<void> {
+  const apiKey = requireEnvironmentVariable('TEST_API_KEY')
   const clientId = requireEnvironmentVariable('TEST_CLIENT_ID')
-  const clientSecret = requireEnvironmentVariable('TEST_CLIENT_SECRET')
-  const accessTokenUrl = requireEnvironmentVariable('TEST_ACCESS_TOKEN_URL')
   const productId = requireEnvironmentVariable('TEST_PRODUCT_ID')
   const zipPath = 'test/test-extension.zip'
 
   try {
-    const accessToken = await getAccessToken(clientId, clientSecret, accessTokenUrl)
-    const uploadOperationId = await uploadPackage(productId, zipPath, accessToken)
-    await waitUntilPackageValidated(productId, accessToken, uploadOperationId)
+    const uploadOperationId = await uploadPackage(productId, zipPath, apiKey, clientId)
+    await waitUntilPackageValidated(productId, apiKey, clientId, uploadOperationId)
   } catch (e: unknown) {
     handleError(e)
   }

@@ -1,7 +1,6 @@
 import * as core from '@actions/core'
 
 import {
-  getAccessToken,
   sendPackagePublishingRequest,
   uploadPackage,
   waitUntilPackagePublished,
@@ -12,41 +11,28 @@ import { handleError } from '@/error'
 async function run(
   productId: string,
   zipPath: string,
+  apiKey: string,
   clientId: string,
-  clientSecret: string,
-  accessUrl: string,
   uploadOnly: boolean
 ): Promise<void> {
-  const token = await getAccessToken(clientId, clientSecret, accessUrl)
-  const uploadOperationId = await uploadPackage(productId, zipPath, token)
-  await waitUntilPackageValidated(productId, token, uploadOperationId)
+  const uploadOperationId = await uploadPackage(productId, zipPath, apiKey, clientId)
+  await waitUntilPackageValidated(productId, apiKey, clientId, uploadOperationId)
   if (!uploadOnly) {
-    const publishingOperationId = await sendPackagePublishingRequest(productId, token)
-    await waitUntilPackagePublished(productId, token, publishingOperationId)
+    const publishingOperationId = await sendPackagePublishingRequest(productId, apiKey, clientId)
+    await waitUntilPackagePublished(productId, apiKey, clientId, publishingOperationId)
   }
 }
 
 async function main() {
+  const apiKey = core.getInput('api-key', { required: true })
   const clientId = core.getInput('client-id', { required: true })
-  const clientSecret = core.getInput('client-secret', { required: true })
-  const accessTokenUrl = core.getInput('access-token-url', { required: true })
-
-  const checkCredentialsOnly = core.getBooleanInput('check-credentials-only')
-  if (checkCredentialsOnly) {
-    try {
-      await getAccessToken(clientId, clientSecret, accessTokenUrl)
-    } catch (e: unknown) {
-      handleError(e)
-    }
-    return
-  }
 
   const productId = core.getInput('product-id', { required: true })
   const zipPath = core.getInput('zip-path', { required: true })
   const uploadOnly = core.getBooleanInput('upload-only')
 
   try {
-    await run(productId, zipPath, clientId, clientSecret, accessTokenUrl, uploadOnly)
+    await run(productId, zipPath, apiKey, clientId, uploadOnly)
   } catch (e: unknown) {
     handleError(e)
   }
