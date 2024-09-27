@@ -4,13 +4,8 @@ import { CustomError } from 'ts-custom-error'
 import { logger, stringify } from '@/utils'
 
 export const ERR_UPLOADING_PACKAGE = 1
-export const ERR_PACKAGE_VALIDATION = 2
-export const ERR_PUBLISHING_PACKAGE_REQUEST = 3
 export const ERR_PUBLISHING_PACKAGE = 4
-export const OPERATION_TIMEOUT_EXCEEDED = 5
 export const RESPONSE_NO_LOCATION = 6
-export const RESPONSE_NO_STATUS = 7
-export const ERR_ACCESS_TOKEN = 8
 export const ERR_INVALID_INPUT = 9
 export const ERR_UNKNOWN_HTTP = 254
 export const ERR_UNKNOWN = 255
@@ -22,6 +17,16 @@ export class EdgeAddonActionError extends CustomError {
   ) {
     super(message)
   }
+}
+
+export function tryGetErrorMessage(e: unknown): string {
+  if (e instanceof Error) {
+    return e.message
+  }
+  if (typeof e === 'object' && e !== null && 'message' in e && typeof e.message === 'string') {
+    return e.message
+  }
+  return stringify(e)
 }
 
 export function getStringOrError(e: unknown): string | Error {
