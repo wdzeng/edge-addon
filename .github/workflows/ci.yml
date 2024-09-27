@@ -16,14 +16,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v3
         with:
-          version: ^8.14.2
+          version: ^9.11.0
           run_install: true
       - env:
+          TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
           TEST_CLIENT_ID: ${{ secrets.TEST_CLIENT_ID }}
-          TEST_CLIENT_SECRET: ${{ secrets.TEST_CLIENT_SECRET }}
-          TEST_ACCESS_TOKEN_URL: ${{ secrets.TEST_ACCESS_TOKEN_URL }}
           TEST_PRODUCT_ID: ${{ secrets.TEST_PRODUCT_ID }}
         run: pnpm test
   publish:
@@ -32,4 +31,4 @@ jobs:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: wdzeng/action-of-action@v3
+      - uses: wdzeng/action-of-action@v4
