@@ -1,6 +1,16 @@
 import * as core from '@actions/core'
 import { globSync } from 'glob'
 
+export function stringify(e: unknown): string {
+  if (typeof e === 'object') {
+    return JSON.stringify(e)
+  }
+  if (typeof e === 'string') {
+    return e
+  }
+  return String(e)
+}
+
 export function tryResolvePath(pattern: string): string {
   const foundFiles = globSync(pattern)
 

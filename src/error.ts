@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios'
 
-import { logger } from '@/utils'
+import { logger, stringify } from '@/utils'
 
 export const ERR_UPLOADING_PACKAGE = 1
 export const ERR_PACKAGE_VALIDATION = 2

@@ -10,10 +10,9 @@ import {
   OPERATION_TIMEOUT_EXCEEDED,
   RESPONSE_NO_LOCATION,
   RESPONSE_NO_STATUS,
-  getStringOrError,
-  stringify
+  getStringOrError
 } from '@/error'
-import { logger } from '@/utils'
+import { logger, stringify } from '@/utils'
 
 import type { AxiosResponse } from 'axios'
 
