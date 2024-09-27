@@ -1,6 +1,8 @@
 import * as core from '@actions/core'
 import { globSync } from 'glob'
 
+import { ERR_INVALID_INPUT, EdgeAddonActionError } from '@/error'
+
 export function stringify(e: unknown): string {
   if (typeof e === 'object') {
     return JSON.stringify(e)
@@ -15,10 +17,10 @@ export function tryResolvePath(pattern: string): string {
   const foundFiles = globSync(pattern)
 
   if (foundFiles.length < 1) {
-    throw new Error(`File not found: ${pattern}`)
+    throw new EdgeAddonActionError(`File not found: ${pattern}`, ERR_INVALID_INPUT)
   }
   if (foundFiles.length > 1) {
-    throw new Error(`Multiple files found: ${pattern}`)
+    throw new EdgeAddonActionError(`Multiple files found: ${pattern}`, ERR_INVALID_INPUT)
   }
 
   return foundFiles[0]

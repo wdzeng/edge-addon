@@ -1,4 +1,5 @@
 import { AxiosError } from 'axios'
+import { CustomError } from 'ts-custom-error'
 
 import { logger, stringify } from '@/utils'
 
@@ -10,16 +11,17 @@ export const OPERATION_TIMEOUT_EXCEEDED = 5
 export const RESPONSE_NO_LOCATION = 6
 export const RESPONSE_NO_STATUS = 7
 export const ERR_ACCESS_TOKEN = 8
-export const UNKNOWN_ERROR = 255
+export const ERR_INVALID_INPUT = 9
+export const ERR_UNKNOWN_HTTP = 254
+export const ERR_UNKNOWN = 255
 
-export function stringify(e: unknown): string {
-  if (typeof e === 'object') {
-    return JSON.stringify(e)
+export class EdgeAddonActionError extends CustomError {
+  constructor(
+    message: string,
+    readonly code: number
+  ) {
+    super(message)
   }
-  if (typeof e === 'string') {
-    return e
-  }
-  return String(e)
 }
 
 export function getStringOrError(e: unknown): string | Error {
@@ -27,6 +29,11 @@ export function getStringOrError(e: unknown): string | Error {
 }
 
 export function handleError(error: unknown): never {
+  if (error instanceof EdgeAddonActionError) {
+    logger.setFailed(error.message)
+    process.exit(error.code)
+  }
+
   // HTTP error.
   if (error instanceof AxiosError) {
     if (error.response) {
@@ -41,19 +48,19 @@ export function handleError(error: unknown): never {
       )
     }
     logger.setFailed(error.message)
+    process.exit(ERR_UNKNOWN_HTTP)
   }
 
-  // Unknown error.
-  else if (error instanceof Error) {
+  // Unknown error. This may be a bug of this action.
+  let str_err = stringify(error)
+  if (str_err.length > 256) {
+    str_err = `${str_err.slice(0, 256)} <truncated>`
+  }
+  logger.debug(str_err)
+  if (error instanceof Error) {
     logger.setFailed(`Unknown error occurred: ${error.message}`)
-    logger.debug(JSON.stringify(error))
-  }
-
-  // Unknown error type.
-  else {
+  } else {
     logger.setFailed('Unknown error occurred.')
-    logger.debug(JSON.stringify(error))
   }
-
-  process.exit(UNKNOWN_ERROR)
+  process.exit(ERR_UNKNOWN)
 }
