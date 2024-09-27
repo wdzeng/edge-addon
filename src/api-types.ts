@@ -1,14 +1,5 @@
-// Here are types of responses of upload and publishing status.
-//
-// - Upload API:
-//   https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-1
-// - Publishing API:
-//   https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference#response-3
-//
-// The API documentation sucks. It does not provide correct response type. I guess upload API and
-// publishing API share the same response type.
+// Types of responses of upload and publishing status.
 
-// https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-the-publish-call-fails-with-an-unexpected-failure
 // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-the-publish-call-fails-with-an-unexpected-failure
 interface UnexpectedStatusResponse {
   id: string
