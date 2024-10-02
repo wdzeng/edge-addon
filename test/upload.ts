@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import tmp from 'tmp'
 
 import { handleError } from '@/error'
-import { uploadPackage, waitUntilPackageValidated } from '@/lib'
+import { uploadPackage } from '@/lib'
 import { isGitHubAction, logger } from '@/utils'
 
 // Base64-encoded ZIP file.
@@ -74,8 +74,7 @@ async function main(): Promise<void> {
   fs.writeFileSync(zipPath, TEST_ADDON, 'base64')
 
   try {
-    const uploadOperationId = await uploadPackage(productId, zipPath, apiKey, clientId)
-    await waitUntilPackageValidated(productId, apiKey, clientId, uploadOperationId)
+    await uploadPackage(productId, zipPath, apiKey, clientId)
   } catch (e: unknown) {
     handleError(e)
   }

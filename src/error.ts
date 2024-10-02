@@ -5,7 +5,6 @@ import { logger, stringify } from '@/utils'
 
 export const ERR_UPLOADING_PACKAGE = 1
 export const ERR_PUBLISHING_PACKAGE = 4
-export const RESPONSE_NO_LOCATION = 6
 export const ERR_INVALID_INPUT = 9
 export const ERR_UNKNOWN_HTTP = 254
 export const ERR_UNKNOWN = 255

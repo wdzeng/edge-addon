@@ -1,12 +1,7 @@
 import * as core from '@actions/core'
 
 import { handleError } from '@/error'
-import {
-  sendPackagePublishingRequest,
-  uploadPackage,
-  waitUntilPackagePublished,
-  waitUntilPackageValidated
-} from '@/lib'
+import { publishPackage, uploadPackage } from '@/lib'
 import { tryResolvePath } from '@/utils'
 
 async function run(
@@ -16,11 +11,9 @@ async function run(
   clientId: string,
   uploadOnly: boolean
 ): Promise<void> {
-  const uploadOperationId = await uploadPackage(productId, zipPath, apiKey, clientId)
-  await waitUntilPackageValidated(productId, apiKey, clientId, uploadOperationId)
+  await uploadPackage(productId, zipPath, apiKey, clientId)
   if (!uploadOnly) {
-    const publishingOperationId = await sendPackagePublishingRequest(productId, apiKey, clientId)
-    await waitUntilPackagePublished(productId, apiKey, clientId, publishingOperationId)
+    await publishPackage(productId, apiKey, clientId)
   }
 }
 

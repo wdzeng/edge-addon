@@ -9,33 +9,14 @@ import {
   ERR_PUBLISHING_PACKAGE,
   ERR_UPLOADING_PACKAGE,
   EdgeAddonActionError,
-  RESPONSE_NO_LOCATION,
   tryGetErrorMessage
 } from '@/error'
 import { logger } from '@/utils'
 
-import type { AxiosResponse } from 'axios'
-
 const WAIT_DELAY = 10 * 1000 // 10 seconds
 const MAX_WAIT_TIME = 10 * 60 * 1000 // 10 minutes
 
-function getOperationIdFromResponse(response: AxiosResponse): string {
-  const responseHeaders = response.headers
-
-  if ('location' in responseHeaders) {
-    const operationId = responseHeaders.location as string
-    logger.debug(`Operation ID: ${operationId}`)
-    return operationId
-  }
-
-  logger.debug(JSON.stringify(responseHeaders))
-  throw new EdgeAddonActionError(
-    'The API server does not provide operation ID.',
-    RESPONSE_NO_LOCATION
-  )
-}
-
-export async function uploadPackage(
+async function sendUploadPackageRequest(
   productId: string,
   zipPath: string,
   apiKey: string,
@@ -52,12 +33,21 @@ export async function uploadPackage(
     'X-ClientID': clientId
   }
   const response = await axios.post<never>(url, zipStream, { headers }) // 202 Accepted
-  const operationId = getOperationIdFromResponse(response)
+
+  const operationId = response.headers.location as string | undefined
+  if (!operationId) {
+    logger.debug(JSON.stringify(response.headers))
+    throw new EdgeAddonActionError(
+      'Failed to upload the add-on. The API server does not provide operation ID.',
+      ERR_UPLOADING_PACKAGE
+    )
+  }
+
   logger.info('Package uploaded.')
   return operationId
 }
 
-export async function waitUntilPackageValidated(
+async function waitUntilPackageValidated(
   productId: string,
   apiKey: string,
   clientId: string,
@@ -115,7 +105,17 @@ export async function waitUntilPackageValidated(
   throw new EdgeAddonActionError('Failed to validate the add-on.', ERR_UPLOADING_PACKAGE)
 }
 
-export async function sendPackagePublishingRequest(
+export async function uploadPackage(
+  productId: string,
+  zipPath: string,
+  apiKey: string,
+  clientId: string
+) {
+  const operationId = await sendUploadPackageRequest(productId, zipPath, apiKey, clientId)
+  await waitUntilPackageValidated(productId, apiKey, clientId, operationId)
+}
+
+async function sendPackagePublishingRequest(
   productId: string,
   apiKey: string,
   clientId: string
@@ -129,12 +129,20 @@ export async function sendPackagePublishingRequest(
     {}, // Empty body
     { headers: { 'Authorization': `ApiKey ${apiKey}`, 'X-ClientID': clientId } }
   )
-  const operationId = getOperationIdFromResponse(response)
+
+  const operationId = response.headers.location as string | undefined
+  if (!operationId) {
+    logger.debug(JSON.stringify(response.headers))
+    throw new EdgeAddonActionError(
+      'Failed to publish the add-on. The API server does not provide operation ID.',
+      ERR_PUBLISHING_PACKAGE
+    )
+  }
   logger.info('Publishing request sent.')
   return operationId
 }
 
-export async function waitUntilPackagePublished(
+async function waitUntilPackagePublished(
   productId: string,
   apiKey: string,
   clientId: string,
@@ -222,4 +230,9 @@ export async function waitUntilPackagePublished(
   }
 
   throw new EdgeAddonActionError('Failed to publish the add-on.', ERR_PUBLISHING_PACKAGE)
+}
+
+export async function publishPackage(productId: string, apiKey: string, clientId: string) {
+  const operationId = await sendPackagePublishingRequest(productId, apiKey, clientId)
+  await waitUntilPackagePublished(productId, apiKey, clientId, operationId)
 }
