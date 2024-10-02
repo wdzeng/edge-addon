@@ -1,3 +1,5 @@
+import fs from 'node:fs'
+
 import * as core from '@actions/core'
 import { globSync } from 'glob'
 
@@ -13,7 +15,7 @@ export function stringify(e: unknown): string {
   return String(e)
 }
 
-export function tryResolvePath(pattern: string): string {
+export function tryResolveFile(pattern: string): string {
   const foundFiles = globSync(pattern)
 
   if (foundFiles.length < 1) {
@@ -21,6 +23,12 @@ export function tryResolvePath(pattern: string): string {
   }
   if (foundFiles.length > 1) {
     throw new EdgeAddonActionError(`Multiple files found: ${pattern}`, ERR_INVALID_INPUT)
+  }
+
+  const stat = fs.statSync(foundFiles[0])
+
+  if (!stat.isFile()) {
+    throw new EdgeAddonActionError(`Not a regular file: ${pattern}`, ERR_INVALID_INPUT)
   }
 
   return foundFiles[0]

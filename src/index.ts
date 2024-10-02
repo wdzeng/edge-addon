@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 
 import { handleError } from '@/error'
 import { publishPackage, uploadPackage } from '@/lib'
-import { tryResolvePath } from '@/utils'
+import { tryResolveFile } from '@/utils'
 
 async function run(
   productId: string,
@@ -26,7 +26,7 @@ async function main() {
   const uploadOnly = core.getBooleanInput('upload-only')
 
   try {
-    zipPath = tryResolvePath(zipPath)
+    zipPath = tryResolveFile(zipPath)
     await run(productId, zipPath, apiKey, clientId, uploadOnly)
   } catch (e: unknown) {
     handleError(e)
