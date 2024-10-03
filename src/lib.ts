@@ -55,7 +55,7 @@ async function waitUntilPackageValidated(
   // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api?tabs=v1-1#checking-the-status-of-a-package-upload
   // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#check-the-status-of-a-package-upload
   logger.info('Waiting until upload request accepted.')
-  const url = `https://api.addons.microsoftedge.microsoft.com/v1/products/${productId}/submissions/operations/${operationId}`
+  const url = `https://api.addons.microsoftedge.microsoft.com/v1/products/${productId}/submissions/draft/package/operations/${operationId}`
   const headers = { 'Authorization': `ApiKey ${apiKey}`, 'X-ClientID': clientId }
 
   const endTime = Date.now() + MAX_WAIT_TIME * 1000

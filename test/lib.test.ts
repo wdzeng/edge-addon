@@ -39,8 +39,9 @@ const AUTH_HEADERS_MATCHER: { asymmetricMatch: (...args: unknown[]) => boolean }
   })
 
 const URL_CREATE_UPLOAD = `https://api.addons.microsoftedge.microsoft.com/v1/products/${TEST_PRODUCT_ID}/submissions/draft/package`
+const URL_VALIDATE_UPLOAD = `https://api.addons.microsoftedge.microsoft.com/v1/products/${TEST_PRODUCT_ID}/submissions/draft/package/operations/${TEST_OPERATION_ID}`
 const URL_CREATE_PUBLISH = `https://api.addons.microsoftedge.microsoft.com/v1/products/${TEST_PRODUCT_ID}/submissions`
-const URL_VALIDATE_OPERATION = `https://api.addons.microsoftedge.microsoft.com/v1/products/${TEST_PRODUCT_ID}/submissions/operations/${TEST_OPERATION_ID}`
+const URL_VALIDATE_PUBLISH = `https://api.addons.microsoftedge.microsoft.com/v1/products/${TEST_PRODUCT_ID}/submissions/operations/${TEST_OPERATION_ID}`
 
 describe('uploadPackage', () => {
   const TEST_ZIP_PATH = `${tmp.tmpNameSync()}.zip`
@@ -75,7 +76,7 @@ describe('uploadPackage', () => {
         return [204, undefined, { location: TEST_OPERATION_ID }]
       })
 
-    mockAdapter.onGet(URL_VALIDATE_OPERATION, { headers: AUTH_HEADERS_MATCHER }).replyOnce(_ => {
+    mockAdapter.onGet(URL_VALIDATE_UPLOAD, { headers: AUTH_HEADERS_MATCHER }).replyOnce(_ => {
       assert(uploadCreationTime)
 
       const now = new Date()
@@ -148,7 +149,7 @@ describe('uploadPackage', () => {
         return [204, undefined, { location: TEST_OPERATION_ID }]
       })
 
-    mockAdapter.onGet(URL_VALIDATE_OPERATION, { headers: AUTH_HEADERS_MATCHER }).replyOnce(_ => {
+    mockAdapter.onGet(URL_VALIDATE_UPLOAD, { headers: AUTH_HEADERS_MATCHER }).replyOnce(_ => {
       assert(uploadCreationTime)
       return [
         200,
@@ -191,7 +192,7 @@ describe('uploadPackage', () => {
         return [204, undefined, { location: TEST_OPERATION_ID }]
       })
 
-    mockAdapter.onGet(URL_VALIDATE_OPERATION, { headers: AUTH_HEADERS_MATCHER }).reply(_ => {
+    mockAdapter.onGet(URL_VALIDATE_UPLOAD, { headers: AUTH_HEADERS_MATCHER }).reply(_ => {
       assert(uploadCreationTime)
       return [
         200,
@@ -252,7 +253,7 @@ describe('publishPackage', () => {
         return [204, undefined, { location: TEST_OPERATION_ID }]
       })
 
-    mockAdapter.onGet(URL_VALIDATE_OPERATION, { headers: AUTH_HEADERS_MATCHER }).replyOnce(_ => {
+    mockAdapter.onGet(URL_VALIDATE_PUBLISH, { headers: AUTH_HEADERS_MATCHER }).replyOnce(_ => {
       assert(publishCreationTime)
 
       const now = new Date()
@@ -318,7 +319,7 @@ describe('publishPackage', () => {
         return [204, undefined, { location: TEST_OPERATION_ID }]
       })
 
-    mockAdapter.onGet(URL_VALIDATE_OPERATION, { headers: AUTH_HEADERS_MATCHER }).replyOnce(_ => {
+    mockAdapter.onGet(URL_VALIDATE_PUBLISH, { headers: AUTH_HEADERS_MATCHER }).replyOnce(_ => {
       assert(publishCreationTime)
       return [
         200,
@@ -356,7 +357,7 @@ describe('publishPackage', () => {
         return [204, undefined, { location: TEST_OPERATION_ID }]
       })
 
-    mockAdapter.onGet(URL_VALIDATE_OPERATION, { headers: AUTH_HEADERS_MATCHER }).reply(_ => {
+    mockAdapter.onGet(URL_VALIDATE_PUBLISH, { headers: AUTH_HEADERS_MATCHER }).reply(_ => {
       assert(publishCreationTime)
       return [
         200,
