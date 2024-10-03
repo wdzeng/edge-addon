@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
-    name: Run tests
+  unit-test:
+    name: Run unit tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,16 +18,33 @@ jobs:
           node-version: '20'
       - uses: pnpm/action-setup@v3
         with:
-          version: ^9.11.0
+          version: ^9.12.0
+          run_install: true
+      - run: pnpm test:unit-test
+  upload-test:
+    name: Run upload test
+    needs: unit-test
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: pnpm/action-setup@v3
+        with:
+          version: ^9.12.0
           run_install: true
       - env:
           TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
           TEST_CLIENT_ID: ${{ secrets.TEST_CLIENT_ID }}
           TEST_PRODUCT_ID: ${{ secrets.TEST_PRODUCT_ID }}
-        run: pnpm test
+        run: pnpm test:upload
   publish:
     name: Publish action
-    needs: test
+    needs:
+      - unit-test
+      - upload-test
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
