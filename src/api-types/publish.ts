@@ -1,11 +1,11 @@
 // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-the-publish-call-fails-with-an-unexpected-failure
-interface UnexpectedStatusResponse {
+export interface UnexpectedPublishStatusResponse {
   id: string
   message: string
 }
 
 // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-the-publish-call-succeeds
-interface SuccessfulStatusResponse {
+export interface SuccessfulPublishStatusResponse {
   id: string
   createdTime: string // Date
   lastUpdatedTime: string // Date
@@ -16,7 +16,7 @@ interface SuccessfulStatusResponse {
 }
 
 // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-the-operation-is-still-in-progress
-interface InProgressStatusResponse {
+export interface InProgressPublishStatusResponse {
   id: string
   createdTime: string // Date
   lastUpdatedTime: string // Date
@@ -27,7 +27,7 @@ interface InProgressStatusResponse {
 }
 
 // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-the-operation-fails-with-errors
-interface FailedStatusResponse {
+export interface FailedPublishStatusResponse {
   id: string
   createdTime: string // Date
   lastUpdatedTime: string // Date
@@ -37,9 +37,9 @@ interface FailedStatusResponse {
   errors: null | { message: string }[]
 }
 
-type ExpectedStatusResponse =
-  | SuccessfulStatusResponse
-  | FailedStatusResponse
-  | InProgressStatusResponse
+type ExpectedPublishStatusResponse =
+  | SuccessfulPublishStatusResponse
+  | FailedPublishStatusResponse
+  | InProgressPublishStatusResponse
 
-export type PublishStatusResponse = UnexpectedStatusResponse | ExpectedStatusResponse
+export type PublishStatusResponse = UnexpectedPublishStatusResponse | ExpectedPublishStatusResponse
