@@ -4,7 +4,11 @@
 [![license](https://img.shields.io/github/license/wdzeng/edge-addon?color=red)](https://github.com/wdzeng/edge-addon/blob/main/LICENSE)
 
 This action publishes your Edge add-on onto [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/Microsoft-Edge-Extensions-Home)
-using the [Microsoft Edge Add-ons API v1](https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api).
+using the [Microsoft Edge Add-ons API v1.0](https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api).
+
+> [!WARNING]  
+> The Microsoft Edge Add-ons API v1.0 has been deprecated and will stop service in the future.
+> Please change to use the [@v2](https://github.com/wdzeng/edge-addon/tree/main) action.
 
 This action can only publish a new version of an existing add-on. Publishing a new add-on is not
 supported.
