@@ -16,4 +16,13 @@ module.exports = {
     'unicorn/prefer-top-level-await': 'off',
     'prettier/prettier': 'warn'
   },
+  overrides: [
+    {
+      // disable `any` checks in tests
+      files: ["test/**/*.test.ts"],
+      rules: {
+        "@typescript-eslint/no-unsafe-assignment": "off",
+      },
+    },
+  ],
 }

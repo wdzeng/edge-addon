@@ -1,5 +1,5 @@
 // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-the-operation-is-still-in-progress
-export interface InProgressStatusResponse {
+export interface InProgressUploadStatusResponse {
   id: string // Operation ID
   createdTime: string // Date
   lastUpdatedTime: string // Date
@@ -10,7 +10,7 @@ export interface InProgressStatusResponse {
 }
 
 // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-the-operation-succeeds
-export interface SuccessfulStatusResponse {
+export interface SuccessfulUploadStatusResponse {
   id: string // Operation ID
   createdTime: string // Date
   lastUpdatedTime: string // Date
@@ -21,7 +21,7 @@ export interface SuccessfulStatusResponse {
 }
 
 // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-the-operation-fails-with-errors
-export interface FailedStatusResponse {
+export interface FailedUploadStatusResponse {
   id: string // Operation ID
   createdTime: string // Date
   lastUpdatedTime: string // Date
@@ -32,6 +32,6 @@ export interface FailedStatusResponse {
 }
 
 export type UploadStatusResponse =
-  | InProgressStatusResponse
-  | SuccessfulStatusResponse
-  | FailedStatusResponse
+  | InProgressUploadStatusResponse
+  | SuccessfulUploadStatusResponse
+  | FailedUploadStatusResponse
