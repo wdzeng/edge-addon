@@ -1,4 +1,3 @@
-import assert from 'node:assert'
 import fs from 'node:fs'
 
 import axios from 'axios'
@@ -78,12 +77,11 @@ async function waitUntilPackageValidated(
   if (response === undefined) {
     const axiosResponse = await axios<UploadStatusResponse>(url, { headers })
     response = axiosResponse.data
-    if (response.status === 'InProgress') {
-      throw new EdgeAddonActionError('Operation timeout exceeded.', ERR_UPLOADING_PACKAGE)
-    }
   }
 
-  assert(response.status !== 'InProgress')
+  if (response.status === 'InProgress') {
+    throw new EdgeAddonActionError('Operation timeout exceeded.', ERR_UPLOADING_PACKAGE)
+  }
 
   if (response.status === 'Succeeded') {
     logger.info('Validation succeeded.')
@@ -173,9 +171,10 @@ async function waitUntilPackagePublished(
   if (response === undefined) {
     const axiosResponse = await axios<PublishStatusResponse>(url, { headers })
     response = axiosResponse.data
-    if ('status' in response && response.status === 'InProgress') {
-      throw new EdgeAddonActionError('Operation timeout exceeded.', ERR_PUBLISHING_PACKAGE)
-    }
+  }
+
+  if ('status' in response && response.status === 'InProgress') {
+    throw new EdgeAddonActionError('Operation timeout exceeded.', ERR_PUBLISHING_PACKAGE)
   }
 
   // Unexpected response.
@@ -188,8 +187,6 @@ async function waitUntilPackagePublished(
       ERR_PUBLISHING_PACKAGE
     )
   }
-
-  assert(response.status !== 'InProgress')
 
   if (response.status === 'Succeeded') {
     logger.info('Package published.')
