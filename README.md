@@ -6,6 +6,10 @@
 This action publishes your Edge add-on onto [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/Microsoft-Edge-Extensions-Home)
 using the [Microsoft Edge Add-ons API v1.1](https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api).
 
+> [!NOTE]  
+> This action uses the latest v1.1 API. To use the deprecated v1.0 API, please change to use the
+> [@v1](https://github.com/wdzeng/edge-addon/tree/src-v1) action.
+
 This action can only publish a new version of an existing add-on. Publishing a new add-on is not
 supported.
 
@@ -15,7 +19,6 @@ Following items are required before you publishing your Edge add-on:
 
 - A zip file to upload.
 - An API key and a client ID.
-- An access token url.
 
 Please refer to this [tutorial](https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api#before-you-begin)
 for how to generate an API key and a client ID.
@@ -26,9 +29,8 @@ Unless noted with a default value, all options are required.
 
 - `product-id`: the id of your add-on.
 - `zip-path`: path to the zip file to upload; may include a glob pattern (only one file must match).
+- `api-key`: you API key.
 - `client-id`: your API client ID.
-- `client-secret`: your API client secret.
-- `access-token-url`: your access token URL.
 - `upload-only`: (boolean) `true` indicates this extension will be uploaded without publishing
   (you'll have to publish it manually); default to `false`.
 
@@ -36,13 +38,12 @@ Example:
 
 ```yaml
 steps:
-  - uses: wdzeng/edge-addon@v1
+  - uses: wdzeng/edge-addon@v2
     with:
       product-id: your-addon-product-id
       zip-path: your-addon.zip
-      client-id: ${{ secrets.EDGE_CLIENT_ID }}
-      client-secret: ${{ secrets.EDGE_CLIENT_SECRET }}
-      access-token-url: ${{ secrets.EDGE_ACCESS_TOKEN_URL }}
+      api-key: ${{ secrets.API_KEY }}
+      client-id: ${{ secrets.CLIENT_ID }}
 ```
 
 ## References
