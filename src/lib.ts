@@ -12,8 +12,8 @@ import {
 } from '@/error'
 import { logger } from '@/utils'
 
-const WAIT_DELAY = 10 * 1000 // 10 seconds
-const MAX_WAIT_TIME = 10 * 60 * 1000 // 10 minutes
+const WAIT_DELAY = 10 // 10 seconds
+const MAX_WAIT_TIME = 10 * 60 // 10 minutes
 
 async function sendUploadPackageRequest(
   productId: string,
@@ -58,7 +58,7 @@ async function waitUntilPackageValidated(
   const url = `https://api.addons.microsoftedge.microsoft.com/v1/products/${productId}/submissions/operations/${operationId}`
   const headers = { 'Authorization': `ApiKey ${apiKey}`, 'X-ClientID': clientId }
 
-  const endTime = Date.now() + MAX_WAIT_TIME
+  const endTime = Date.now() + MAX_WAIT_TIME * 1000
   let response: UploadStatusResponse | undefined = undefined
   while (Date.now() < endTime) {
     logger.info('Checking if operation has succeeded.')
@@ -69,8 +69,8 @@ async function waitUntilPackageValidated(
       break
     }
 
-    logger.info(`Operation still in progress. Try again after ${WAIT_DELAY} ms.`)
-    await new Promise(res => setTimeout(res, WAIT_DELAY))
+    logger.info(`Operation still in progress. Try again after ${WAIT_DELAY} seconds.`)
+    await new Promise(res => setTimeout(res, WAIT_DELAY * 1000))
   }
 
   // Try for the last time.
@@ -151,7 +151,7 @@ async function waitUntilPackagePublished(
   const url = `https://api.addons.microsoftedge.microsoft.com/v1/products/${productId}/submissions/operations/${operationId}`
   const headers = { 'Authorization': `ApiKey ${apiKey}`, 'X-ClientID': clientId }
 
-  const endTime = Date.now() + MAX_WAIT_TIME
+  const endTime = Date.now() + MAX_WAIT_TIME * 1000
   let response: PublishStatusResponse | undefined = undefined
   while (Date.now() < endTime) {
     logger.info('Checking if the publishing operation has succeeded.')
@@ -163,8 +163,8 @@ async function waitUntilPackagePublished(
       break
     }
 
-    logger.info(`Operation still in progress. Try again after ${WAIT_DELAY} ms.`)
-    await new Promise(res => setTimeout(res, WAIT_DELAY))
+    logger.info(`Operation still in progress. Try again after ${WAIT_DELAY} seconds.`)
+    await new Promise(res => setTimeout(res, WAIT_DELAY * 1000))
   }
 
   // Try for the last time.
