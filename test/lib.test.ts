@@ -42,6 +42,8 @@ const URL_CREATE_UPLOAD = `https://api.addons.microsoftedge.microsoft.com/v1/pro
 const URL_VALIDATE_UPLOAD = `https://api.addons.microsoftedge.microsoft.com/v1/products/${TEST_PRODUCT_ID}/submissions/draft/package/operations/${TEST_OPERATION_ID}`
 const URL_CREATE_PUBLISH = `https://api.addons.microsoftedge.microsoft.com/v1/products/${TEST_PRODUCT_ID}/submissions`
 const URL_VALIDATE_PUBLISH = `https://api.addons.microsoftedge.microsoft.com/v1/products/${TEST_PRODUCT_ID}/submissions/operations/${TEST_OPERATION_ID}`
+const APPROVAL_NOTES = 'I always get the shemp'
+const NO_APPROVAL_NOTES = undefined
 
 describe('uploadPackage', () => {
   const TEST_ZIP_PATH = `${tmp.tmpNameSync()}.zip`
@@ -247,7 +249,7 @@ describe('publishPackage', () => {
     let publishCreationTime: string | undefined = undefined
 
     mockAdapter
-      .onPost(URL_CREATE_PUBLISH, undefined, { headers: AUTH_HEADERS_MATCHER })
+      .onPost(URL_CREATE_PUBLISH, { notes: APPROVAL_NOTES }, { headers: AUTH_HEADERS_MATCHER })
       .replyOnce(() => {
         publishCreationTime = new Date().toISOString()
         return [204, undefined, { location: TEST_OPERATION_ID }]
@@ -287,7 +289,12 @@ describe('publishPackage', () => {
       ]
     })
 
-    const publishPackagePromise = publishPackage(TEST_PRODUCT_ID, TEST_API_KEY, TEST_CLIENT_ID)
+    const publishPackagePromise = publishPackage(
+      TEST_PRODUCT_ID,
+      TEST_API_KEY,
+      TEST_CLIENT_ID,
+      APPROVAL_NOTES
+    )
     await vi.waitUntil(() => publishCreationTime !== undefined, { interval: 0 })
     vi.advanceTimersByTime(10 * 60 * 1000)
     await expect(publishPackagePromise).resolves.toBeUndefined()
@@ -305,7 +312,9 @@ describe('publishPackage', () => {
         return [500, 'Internal Server Error']
       })
 
-    await expect(publishPackage(TEST_PRODUCT_ID, TEST_API_KEY, TEST_CLIENT_ID)).rejects.toThrow()
+    await expect(
+      publishPackage(TEST_PRODUCT_ID, TEST_API_KEY, TEST_CLIENT_ID, NO_APPROVAL_NOTES)
+    ).rejects.toThrow()
     expect(createPublishRequestSent).toBe(true)
   })
 
@@ -335,7 +344,12 @@ describe('publishPackage', () => {
       ]
     })
 
-    const publishPackagePromise = publishPackage(TEST_PRODUCT_ID, TEST_API_KEY, TEST_CLIENT_ID)
+    const publishPackagePromise = publishPackage(
+      TEST_PRODUCT_ID,
+      TEST_API_KEY,
+      TEST_CLIENT_ID,
+      NO_APPROVAL_NOTES
+    )
     await vi.waitUntil(() => publishCreationTime !== undefined, { interval: 0 })
     vi.advanceTimersByTime(10 * 60 * 1000)
     try {
@@ -373,7 +387,12 @@ describe('publishPackage', () => {
       ]
     })
 
-    const publishPackagePromise = publishPackage(TEST_PRODUCT_ID, TEST_API_KEY, TEST_CLIENT_ID)
+    const publishPackagePromise = publishPackage(
+      TEST_PRODUCT_ID,
+      TEST_API_KEY,
+      TEST_CLIENT_ID,
+      NO_APPROVAL_NOTES
+    )
     await vi.waitUntil(() => publishCreationTime !== undefined, { interval: 0 })
     const advanceTimerPromise = vi.advanceTimersByTimeAsync(10 * 60 * 1000)
     try {

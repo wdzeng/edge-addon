@@ -19,6 +19,9 @@ inputs:
     description: Upload the extension without publishing. Default to false.
     required: false
     default: "false"
+  approval-notes:
+    description: A secret text to Microsoft reviewers.
+    required: false
 
 runs:
   using: node20
