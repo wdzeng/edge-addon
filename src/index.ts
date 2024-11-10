@@ -9,11 +9,12 @@ async function run(
   zipPath: string,
   apiKey: string,
   clientId: string,
-  uploadOnly: boolean
+  uploadOnly: boolean,
+  notesForCertification: string | undefined
 ): Promise<void> {
   await uploadPackage(productId, zipPath, apiKey, clientId)
   if (!uploadOnly) {
-    await publishPackage(productId, apiKey, clientId)
+    await publishPackage(productId, apiKey, clientId, notesForCertification)
   }
 }
 
@@ -24,10 +25,12 @@ async function main() {
   const productId = core.getInput('product-id', { required: true })
   let zipPath = core.getInput('zip-path', { required: true })
   const uploadOnly = core.getBooleanInput('upload-only')
+  const notesForCertification =
+    core.getInput('notes-for-certification', { required: false }) || undefined
 
   try {
     zipPath = tryResolveFile(zipPath)
-    await run(productId, zipPath, apiKey, clientId, uploadOnly)
+    await run(productId, zipPath, apiKey, clientId, uploadOnly, notesForCertification)
   } catch (e: unknown) {
     handleError(e)
   }

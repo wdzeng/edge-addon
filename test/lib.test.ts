@@ -32,6 +32,7 @@ const TEST_PRODUCT_ID = 'test-product-id'
 const TEST_API_KEY = 'test-api-key'
 const TEST_CLIENT_ID = 'test-client-id'
 const TEST_OPERATION_ID = 'test-operation-id'
+const TEST_NOTES_FOR_CERTIFICATION = 'test-notes-for-certification'
 const AUTH_HEADERS_MATCHER: { asymmetricMatch: (...args: unknown[]) => boolean } =
   expect.objectContaining({
     'Authorization': `ApiKey ${TEST_API_KEY}`,
@@ -247,7 +248,7 @@ describe('publishPackage', () => {
     let publishCreationTime: string | undefined = undefined
 
     mockAdapter
-      .onPost(URL_CREATE_PUBLISH, undefined, { headers: AUTH_HEADERS_MATCHER })
+      .onPost(URL_CREATE_PUBLISH, TEST_NOTES_FOR_CERTIFICATION, { headers: AUTH_HEADERS_MATCHER })
       .replyOnce(() => {
         publishCreationTime = new Date().toISOString()
         return [204, undefined, { location: TEST_OPERATION_ID }]
@@ -287,7 +288,12 @@ describe('publishPackage', () => {
       ]
     })
 
-    const publishPackagePromise = publishPackage(TEST_PRODUCT_ID, TEST_API_KEY, TEST_CLIENT_ID)
+    const publishPackagePromise = publishPackage(
+      TEST_PRODUCT_ID,
+      TEST_API_KEY,
+      TEST_CLIENT_ID,
+      TEST_NOTES_FOR_CERTIFICATION
+    )
     await vi.waitUntil(() => publishCreationTime !== undefined, { interval: 0 })
     vi.advanceTimersByTime(10 * 60 * 1000)
     await expect(publishPackagePromise).resolves.toBeUndefined()
@@ -305,7 +311,9 @@ describe('publishPackage', () => {
         return [500, 'Internal Server Error']
       })
 
-    await expect(publishPackage(TEST_PRODUCT_ID, TEST_API_KEY, TEST_CLIENT_ID)).rejects.toThrow()
+    await expect(
+      publishPackage(TEST_PRODUCT_ID, TEST_API_KEY, TEST_CLIENT_ID, undefined)
+    ).rejects.toThrow()
     expect(createPublishRequestSent).toBe(true)
   })
 
@@ -335,7 +343,12 @@ describe('publishPackage', () => {
       ]
     })
 
-    const publishPackagePromise = publishPackage(TEST_PRODUCT_ID, TEST_API_KEY, TEST_CLIENT_ID)
+    const publishPackagePromise = publishPackage(
+      TEST_PRODUCT_ID,
+      TEST_API_KEY,
+      TEST_CLIENT_ID,
+      undefined
+    )
     await vi.waitUntil(() => publishCreationTime !== undefined, { interval: 0 })
     vi.advanceTimersByTime(10 * 60 * 1000)
     try {
@@ -373,7 +386,12 @@ describe('publishPackage', () => {
       ]
     })
 
-    const publishPackagePromise = publishPackage(TEST_PRODUCT_ID, TEST_API_KEY, TEST_CLIENT_ID)
+    const publishPackagePromise = publishPackage(
+      TEST_PRODUCT_ID,
+      TEST_API_KEY,
+      TEST_CLIENT_ID,
+      undefined
+    )
     await vi.waitUntil(() => publishCreationTime !== undefined, { interval: 0 })
     const advanceTimerPromise = vi.advanceTimersByTimeAsync(10 * 60 * 1000)
     try {

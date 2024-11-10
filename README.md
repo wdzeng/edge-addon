@@ -33,6 +33,7 @@ Unless noted with a default value, all options are required.
 - `client-id`: your API client ID.
 - `upload-only`: (boolean) `true` indicates this extension will be uploaded without publishing
   (you'll have to publish it manually); default to `false`.
+- `notes-for-certification`: (optional) A secret text to Microsoft reviewers.
 
 Example:
 

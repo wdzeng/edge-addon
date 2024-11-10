@@ -116,17 +116,16 @@ export async function uploadPackage(
 async function sendPackagePublishingRequest(
   productId: string,
   apiKey: string,
-  clientId: string
+  clientId: string,
+  notesForCertification: string | undefined
 ): Promise<string> {
   // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#publish-the-product-draft-submission
   // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api?tabs=v1-1#publishing-the-submission
   logger.info('Sending publishing request.')
   const url = `https://api.addons.microsoftedge.microsoft.com/v1/products/${productId}/submissions`
-  const response = await axios.post<never>(
-    url,
-    {}, // Empty body
-    { headers: { 'Authorization': `ApiKey ${apiKey}`, 'X-ClientID': clientId } }
-  )
+  const response = await axios.post<never>(url, notesForCertification, {
+    headers: { 'Authorization': `ApiKey ${apiKey}`, 'X-ClientID': clientId }
+  })
 
   const operationId = response.headers.location as string | undefined
   if (!operationId) {
@@ -229,7 +228,17 @@ async function waitUntilPackagePublished(
   throw new EdgeAddonActionError('Failed to publish the add-on.', ERR_PUBLISHING_PACKAGE)
 }
 
-export async function publishPackage(productId: string, apiKey: string, clientId: string) {
-  const operationId = await sendPackagePublishingRequest(productId, apiKey, clientId)
+export async function publishPackage(
+  productId: string,
+  apiKey: string,
+  clientId: string,
+  notesForCertification: string | undefined
+) {
+  const operationId = await sendPackagePublishingRequest(
+    productId,
+    apiKey,
+    clientId,
+    notesForCertification
+  )
   await waitUntilPackagePublished(productId, apiKey, clientId, operationId)
 }
