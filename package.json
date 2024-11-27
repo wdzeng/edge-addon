@@ -1,6 +1,6 @@
 {
   "name": "edge-addon",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Publish add-on to Microsoft Edge Add-ons.",
   "author": "hyperbola",
   "license": "MIT",
