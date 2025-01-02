@@ -6,10 +6,6 @@
 This action publishes your Edge add-on onto [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/Microsoft-Edge-Extensions-Home)
 using the [Microsoft Edge Add-ons API v1.1](https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/using-addons-api).
 
-> [!NOTE]  
-> This action uses the latest v1.1 API. To use the deprecated v1.0 API, please change to use the
-> [@v1](https://github.com/wdzeng/edge-addon/tree/src-v1) action.
-
 This action can only publish a new version of an existing add-on. Publishing a new add-on is not
 supported.
 
