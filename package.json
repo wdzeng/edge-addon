@@ -20,23 +20,30 @@
     "lint": "eslint --fix src"
   },
   "dependencies": {
-    "@actions/core": "^1.10.1",
-    "axios": "^1.7.7",
-    "glob": "^11.0.0",
+    "@actions/core": "^1.11.1",
+    "axios": "^1.8.4",
+    "glob": "^11.0.1",
     "ts-custom-error": "^3.3.1"
   },
   "devDependencies": {
-    "@types/node": "^20.16.9",
+    "@types/node": "^20.17.28",
     "@types/tmp": "^0.2.6",
-    "axios-mock-adapter": "^2.0.0",
-    "dotenv": "^16.4.5",
-    "esbuild": "^0.24.0",
-    "eslint": "^8.57.1",
-    "eslint-config-wdzeng": "github:wdzeng/eslint-config#semver:^0.9.0",
-    "prettier": "^3.3.3",
+    "axios-mock-adapter": "^2.1.0",
+    "dotenv": "^16.4.7",
+    "esbuild": "^0.25.2",
+    "eslint": "^9.23.0",
+    "eslint-config-wdzeng": "github:wdzeng/eslint-config#semver:^0.15.0",
+    "prettier": "^3.5.3",
     "tmp": "^0.2.3",
-    "typescript": "^5.5.4",
-    "vite-tsconfig-paths": "^5.0.1",
-    "vitest": "^2.1.2"
+    "typescript": "^5.8.2",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.1.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "hasown": "npm:@nolyfill/hasown@^1",
+      "is-core-module": "npm:@nolyfill/is-core-module@^1",
+      "isarray": "npm:@nolyfill/isarray@^1"
+    }
   }
 }
