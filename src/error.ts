@@ -41,16 +41,22 @@ export function handleError(error: unknown): never {
   // HTTP error.
   if (error instanceof AxiosError) {
     if (error.response) {
-      // Got response from Microsoft Edge Add-ons API server (v1) with status code 4XX or 5XX.
-      logger.setFailed(
-        `Microsoft Edge Add-ons API server (v1) responses with error code: ${error.response.status}`
-      )
-      logger.setFailed(
+      let errorData =
         typeof error.response.data === 'string'
           ? error.response.data
           : JSON.stringify(error.response.data)
-      )
+      errorData = errorData.trim()
+
+      if (errorData.length > 0) {
+        logger.setFailed(`Microsoft Edge Add-ons API server (v1) responses an error: ${errorData}`)
+      } else {
+        logger.setFailed(
+          'Microsoft Edge Add-ons API server (v1) responses a failure without any error message.'
+        )
+      }
     }
+
+    // This print the HTTP code.
     logger.setFailed(error.message)
     process.exit(ERR_UNKNOWN_HTTP)
   }
