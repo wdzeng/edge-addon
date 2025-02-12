@@ -2,8 +2,6 @@ import fs from 'node:fs'
 
 import axios from 'axios'
 
-import type { PublishStatusResponse } from '@/api-types/publish'
-import type { UploadStatusResponse } from '@/api-types/upload'
 import {
   ERR_PUBLISHING_PACKAGE,
   ERR_UPLOADING_PACKAGE,
@@ -11,6 +9,9 @@ import {
   tryGetErrorMessage
 } from '@/error'
 import { logger } from '@/utils'
+
+import type { PublishStatusResponse } from '@/api-types/publish'
+import type { UploadStatusResponse } from '@/api-types/upload'
 
 const WAIT_DELAY = 10 // 10 seconds
 const MAX_WAIT_TIME = 10 * 60 // 10 minutes

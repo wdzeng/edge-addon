@@ -18,20 +18,20 @@ export function stringify(e: unknown): string {
 export function tryResolveFile(pattern: string): string {
   const foundFiles = globSync(pattern)
 
-  if (foundFiles.length < 1) {
+  if (foundFiles.length === 0) {
     throw new EdgeAddonActionError(`File not found: ${pattern}`, ERR_INVALID_INPUT)
   }
   if (foundFiles.length > 1) {
     throw new EdgeAddonActionError(`Multiple files found: ${pattern}`, ERR_INVALID_INPUT)
   }
 
-  const stat = fs.statSync(foundFiles[0])
+  const stat = fs.statSync(foundFiles[0]!)
 
   if (!stat.isFile()) {
     throw new EdgeAddonActionError(`Not a regular file: ${pattern}`, ERR_INVALID_INPUT)
   }
 
-  return foundFiles[0]
+  return foundFiles[0]!
 }
 
 export function isGitHubAction(): boolean {

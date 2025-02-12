@@ -15,6 +15,9 @@ import {
   vi
 } from 'vitest'
 
+import { ERR_PUBLISHING_PACKAGE, ERR_UPLOADING_PACKAGE, EdgeAddonActionError } from '@/error'
+import { publishPackage, uploadPackage } from '@/lib'
+
 import type {
   FailedPublishStatusResponse,
   InProgressPublishStatusResponse,
@@ -25,19 +28,16 @@ import type {
   InProgressUploadStatusResponse,
   SuccessfulUploadStatusResponse
 } from '@/api-types/upload'
-import { ERR_PUBLISHING_PACKAGE, ERR_UPLOADING_PACKAGE, EdgeAddonActionError } from '@/error'
-import { publishPackage, uploadPackage } from '@/lib'
 
 const TEST_PRODUCT_ID = 'test-product-id'
 const TEST_API_KEY = 'test-api-key'
 const TEST_CLIENT_ID = 'test-client-id'
 const TEST_OPERATION_ID = 'test-operation-id'
 const TEST_NOTES_FOR_CERTIFICATION = 'test-notes-for-certification'
-const AUTH_HEADERS_MATCHER: { asymmetricMatch: (...args: unknown[]) => boolean } =
-  expect.objectContaining({
-    'Authorization': `ApiKey ${TEST_API_KEY}`,
-    'X-ClientID': TEST_CLIENT_ID
-  })
+const AUTH_HEADERS_MATCHER = expect.objectContaining({
+  'Authorization': `ApiKey ${TEST_API_KEY}`,
+  'X-ClientID': TEST_CLIENT_ID
+}) as Record<string, string>
 
 const URL_CREATE_UPLOAD = `https://api.addons.microsoftedge.microsoft.com/v1/products/${TEST_PRODUCT_ID}/submissions/draft/package`
 const URL_VALIDATE_UPLOAD = `https://api.addons.microsoftedge.microsoft.com/v1/products/${TEST_PRODUCT_ID}/submissions/draft/package/operations/${TEST_OPERATION_ID}`
@@ -119,6 +119,7 @@ describe('uploadPackage', () => {
     )
     await vi.waitUntil(() => uploadCreationTime !== undefined, { interval: 0 })
     vi.advanceTimersByTime(10 * 60 * 1000)
+
     await expect(uploadPackagePromise).resolves.toBeUndefined()
     expect(hasValidated).toBe(true)
     expect(Date.now()).toBe(10 * 60 * 1000)
@@ -180,6 +181,7 @@ describe('uploadPackage', () => {
       expect(e).toBeInstanceOf(EdgeAddonActionError)
       expect(e).toHaveProperty('code', ERR_UPLOADING_PACKAGE)
     }
+
     expect(Date.now()).toBe(10 * 60 * 1000)
   })
 
@@ -226,6 +228,7 @@ describe('uploadPackage', () => {
 
     // Let the timer finish and check the time.
     await advanceTimerPromise
+
     expect(Date.now()).toBe(10 * 60 * 1000)
   })
 })
@@ -296,6 +299,7 @@ describe('publishPackage', () => {
     )
     await vi.waitUntil(() => publishCreationTime !== undefined, { interval: 0 })
     vi.advanceTimersByTime(10 * 60 * 1000)
+
     await expect(publishPackagePromise).resolves.toBeUndefined()
     expect(hasValidated).toBe(true)
     expect(Date.now()).toBe(10 * 60 * 1000)
@@ -357,6 +361,7 @@ describe('publishPackage', () => {
       expect(e).toBeInstanceOf(EdgeAddonActionError)
       expect(e).toHaveProperty('code', ERR_PUBLISHING_PACKAGE)
     }
+
     expect(Date.now()).toBe(10 * 60 * 1000)
   })
 
@@ -403,6 +408,7 @@ describe('publishPackage', () => {
 
     // Let the timer finish and check the time.
     await advanceTimerPromise
+
     expect(Date.now()).toBe(10 * 60 * 1000)
   })
 })
