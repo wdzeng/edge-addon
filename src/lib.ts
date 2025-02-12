@@ -206,24 +206,31 @@ async function waitUntilPackagePublished(
     logger.error(tryGetErrorMessage(e))
   }
 
-  // Some error cases are listed in the API documentation. Print some hints for the users to debug.
-  const errorCases: Record<string, string | undefined> = {
-    CreateNotAllowed:
-      'https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-a-new-product-is-published',
-    InProgressSubmission:
-      'https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-theres-an-in-review-submission-for-the-same-product',
-    ModuleStateUnPublishable:
-      'https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-where-any-of-the-modules-are-invalid',
-    NoModulesUpdated:
-      'https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-theres-nothing-new-to-be-published',
-    SubmissionValidationError:
-      'https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-there-are-validation-errors-in-submission',
-    UnpublishInProgress:
-      'https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-theres-an-ongoing-unpublished-submission-for-the-same-product'
-  }
-  const ref = errorCases[response.errorCode ?? '']
-  if (ref) {
+  const irrecoverableFailureErrorMessage = 'An error occurred while performing the operation'
+  if (!response.errorCode && response.message === irrecoverableFailureErrorMessage) {
+    const ref =
+      'https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-the-publish-call-fails-with-an-irrecoverable-failure'
     logger.error(`For this type of failure, you may want to check the API documentation: ${ref}`)
+  } else {
+    // Some error cases are listed in the API documentation. Print some hints for the users to debug.
+    const errorCases: Record<string, string | undefined> = {
+      CreateNotAllowed:
+        'https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-a-new-product-is-published',
+      InProgressSubmission:
+        'https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-theres-an-in-review-submission-for-the-same-product',
+      ModuleStateUnPublishable:
+        'https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-where-any-of-the-modules-are-invalid',
+      NoModulesUpdated:
+        'https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-theres-nothing-new-to-be-published',
+      SubmissionValidationError:
+        'https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-there-are-validation-errors-in-submission',
+      UnpublishInProgress:
+        'https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-theres-an-ongoing-unpublished-submission-for-the-same-product'
+    }
+    const ref = errorCases[response.errorCode ?? '']
+    if (ref) {
+      logger.error(`For this type of failure, you may want to check the API documentation: ${ref}`)
+    }
   }
 
   throw new EdgeAddonActionError('Failed to publish the add-on.', ERR_PUBLISHING_PACKAGE)
