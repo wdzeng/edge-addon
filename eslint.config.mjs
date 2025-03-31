@@ -1,16 +1,19 @@
+// @ts-check
+
 import { getConfigForTs } from 'eslint-config-wdzeng'
 
 export default getConfigForTs(
-  // custom rules
+  // Custom rules
   {
     'unicorn/no-process-exit': 'off',
-    'unicorn/prefer-top-level-await': 'off',
+    'unicorn/prefer-top-level-await': 'off'
   },
-  // options
+  // Options
   {
-    node: true, // whether in Node.js
-    browser: false, // whether in browser
     ecmaVersion: 2022, // ECMAScript version
-    projectRoot: import.meta.dirname // project root dir
+    projectRoot: import.meta.dirname, // Project root directory
+    node: true, // Whether in Node.js
+    browser: false, // Whether in browser
+    vitest: true // Use vitest
   }
 )

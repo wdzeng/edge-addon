@@ -9,6 +9,7 @@
     "type": "git",
     "url": "git+https://github.com/wdzeng/edge-addon"
   },
+  "files": ["src/**/*.ts"],
   "scripts": {
     "build": "pnpm clean && pnpm transpile && cp action.yml dist",
     "transpile": "esbuild src/index.ts --target=node20 --platform=node --minify --bundle --outfile=dist/index.cjs",
@@ -17,7 +18,7 @@
     "test:upload": "pnpm clean && pnpm test:upload:transpile && node -r dotenv/config dist/test/upload.cjs dotenv_config_path=test/.env.local",
     "test:upload:transpile": "esbuild test/upload.ts --platform=node --target=node20 --minify --bundle --outfile=dist/test/upload.cjs",
     "clean": "rm -rf dist",
-    "lint": "eslint --fix src"
+    "lint": "eslint --fix"
   },
   "dependencies": {
     "@actions/core": "^1.11.1",
@@ -45,5 +46,8 @@
       "is-core-module": "npm:@nolyfill/is-core-module@^1",
       "isarray": "npm:@nolyfill/isarray@^1"
     }
+  },
+  "engines": {
+    "node": "^20.18.2"
   }
 }
