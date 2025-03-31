@@ -20,6 +20,9 @@ test('tryGetErrorMessage', () => {
   expect(tryGetErrorMessage(null)).toBe('null') // eslint-disable-line unicorn/no-null
   expect(tryGetErrorMessage(undefined)).toBe('undefined')
   expect(tryGetErrorMessage({ message: { foo: 'bar' } })).toBe('{"message":{"foo":"bar"}}')
+  expect(tryGetErrorMessage('')).toBe('<empty string>')
+  expect(tryGetErrorMessage('\t\t\t')).toBe('<empty string>')
+  expect(tryGetErrorMessage('      ')).toBe('<empty string>')
 })
 
 test('handleError', () => {

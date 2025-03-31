@@ -5,14 +5,18 @@ import { globSync } from 'glob'
 
 import { ERR_INVALID_INPUT, EdgeAddonActionError } from '@/error'
 
-export function stringify(e: unknown): string {
+export function stringifyForDebugging(e: unknown): string {
   if (typeof e === 'object') {
     return JSON.stringify(e)
   }
   if (typeof e === 'string') {
-    return e
+    return e.trim() ? e : '<empty string>'
   }
-  return String(e)
+
+  // Since e is not object, we can safely call String(e).
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string
+  const ret = String(e)
+  return ret.trim() ? ret : '<empty string>'
 }
 
 export function tryResolveFile(pattern: string): string {

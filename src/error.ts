@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios'
 import { CustomError } from 'ts-custom-error'
 
-import { logger, stringify } from '@/utils'
+import { logger, stringifyForDebugging } from '@/utils'
 
 export const ERR_UPLOADING_PACKAGE = 1
 export const ERR_PUBLISHING_PACKAGE = 4
@@ -25,11 +25,11 @@ export function tryGetErrorMessage(e: unknown): string {
   if (typeof e === 'object' && e !== null && 'message' in e && typeof e.message === 'string') {
     return e.message
   }
-  return stringify(e)
+  return stringifyForDebugging(e)
 }
 
 export function getStringOrError(e: unknown): string | Error {
-  return e instanceof Error ? e : stringify(e)
+  return e instanceof Error ? e : stringifyForDebugging(e)
 }
 
 export function handleError(error: unknown): never {
@@ -62,7 +62,7 @@ export function handleError(error: unknown): never {
   }
 
   // Unknown error. This may be a bug of this action.
-  let str_err = stringify(error)
+  let str_err = stringifyForDebugging(error)
   if (str_err.length > 256) {
     str_err = `${str_err.slice(0, 256)} <truncated>`
   }

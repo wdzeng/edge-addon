@@ -5,15 +5,15 @@ import tmp from 'tmp'
 import { describe, expect, test } from 'vitest'
 
 import { ERR_INVALID_INPUT, EdgeAddonActionError } from '@/error'
-import { stringify, tryResolveFile } from '@/utils'
+import { stringifyForDebugging, tryResolveFile } from '@/utils'
 
 test('stringify', () => {
-  expect(stringify('hello')).toBe('hello')
-  expect(stringify(42)).toBe('42')
-  expect(stringify([1, 2, 3])).toBe('[1,2,3]')
-  expect(stringify({ foo: 'bar' })).toBe('{"foo":"bar"}')
-  expect(stringify(null)).toBe('null') // eslint-disable-line unicorn/no-null
-  expect(stringify(undefined)).toBe('undefined')
+  expect(stringifyForDebugging('hello')).toBe('hello')
+  expect(stringifyForDebugging(42)).toBe('42')
+  expect(stringifyForDebugging([1, 2, 3])).toBe('[1,2,3]')
+  expect(stringifyForDebugging({ foo: 'bar' })).toBe('{"foo":"bar"}')
+  expect(stringifyForDebugging(null)).toBe('null') // eslint-disable-line unicorn/no-null
+  expect(stringifyForDebugging(undefined)).toBe('undefined')
 })
 
 describe('tryResolveFile', () => {
