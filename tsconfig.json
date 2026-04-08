@@ -1,21 +1,22 @@
+// https://www.totaltypescript.com/tsconfig-cheat-sheet
 {
+  "include": ["src/**/*.ts", "test/**/*.ts"],
   "compilerOptions": {
-    // Environment and module options.
-    "target": "es2022",
-    "module": "es2022",
-    "moduleResolution": "bundler",
+    /* Base Options: */
     "esModuleInterop": true,
-    "lib": ["ES2022"],
-    "baseUrl": "./",
-    "paths": {
-      "@/*": ["src/*"]
-    },
-    // Completeness and emit options.
     "skipLibCheck": true,
+    "resolveJsonModule": true,
     "verbatimModuleSyntax": true,
-    // Type checking options.
-    "strict": true,
-    "alwaysStrict": true
-  },
-  "include": ["src/**/*.ts", "test/**/*.ts"]
+    "erasableSyntaxOnly": true,
+    "noEmit": true,
+    "lib": ["es2024"],
+    "paths": {
+      "##/*": ["./*"],
+      "#/*": ["./src/*"]
+    },
+
+    // This should be optional. But I don't know why omitting it makes ESLint fail to recognize
+    // global functions e.g. `console.log`.
+    "types": ["node"]
+  }
 }

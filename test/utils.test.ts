@@ -4,8 +4,8 @@ import path from 'node:path'
 import tmp from 'tmp'
 import { describe, expect, test } from 'vitest'
 
-import { ERR_INVALID_INPUT, EdgeAddonActionError } from '@/error'
-import { stringify, tryResolveFile } from '@/utils'
+import { ERR_INVALID_INPUT, EdgeAddonActionError } from '#/error'
+import { stringify, tryResolveFile } from '#/utils'
 
 test('stringify', () => {
   expect(stringify('hello')).toBe('hello')
@@ -21,6 +21,7 @@ describe('tryResolveFile', () => {
     const tmpDir = tmp.dirSync({ keep: false, unsafeCleanup: true })
     fs.writeFileSync(path.join(tmpDir.name, 'foo.txt'), '')
     process.chdir(tmpDir.name)
+
     expect(tryResolveFile('foo.txt')).toBe('foo.txt')
   })
 
@@ -28,6 +29,7 @@ describe('tryResolveFile', () => {
     const tmpDir = tmp.dirSync({ keep: false, unsafeCleanup: true })
     fs.writeFileSync(path.join(tmpDir.name, 'foo.txt'), '')
     process.chdir(tmpDir.name)
+
     expect(tryResolveFile('*.txt')).toBe('foo.txt')
   })
 
@@ -48,6 +50,7 @@ describe('tryResolveFile', () => {
       fs.writeFileSync(path.join(tmpDir.name, 'foo', 'bar.txt'), '')
       process.chdir(tmpDir.name)
       tryResolveFile('bar.txt')
+
       expect.unreachable()
     } catch (e) {
       expect(e).toBeInstanceOf(EdgeAddonActionError)
@@ -62,6 +65,7 @@ describe('tryResolveFile', () => {
       fs.writeFileSync(path.join(tmpDir.name, 'bar.txt'), '')
       process.chdir(tmpDir.name)
       tryResolveFile('*.txt')
+
       expect.unreachable()
     } catch (e) {
       expect(e).toBeInstanceOf(EdgeAddonActionError)
@@ -72,6 +76,7 @@ describe('tryResolveFile', () => {
   test('directory', () => {
     try {
       tryResolveFile('/tmp')
+
       expect.unreachable()
     } catch (e) {
       expect(e).toBeInstanceOf(EdgeAddonActionError)

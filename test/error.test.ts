@@ -8,7 +8,7 @@ import {
   EdgeAddonActionError,
   handleError,
   tryGetErrorMessage
-} from '@/error'
+} from '#/error'
 
 test('tryGetErrorMessage', () => {
   expect(tryGetErrorMessage(new Error('hello'))).toBe('hello')
@@ -24,8 +24,13 @@ test('tryGetErrorMessage', () => {
 
 test('handleError', () => {
   class ProcessExitError extends CustomError {
-    constructor(readonly code: string | number | null | undefined) {
+    #code: string | number | null | undefined
+    constructor(code: string | number | null | undefined) {
       super(`Process exited with code ${code}`)
+      this.#code = code
+    }
+    get code(): string | number | null | undefined {
+      return this.#code
     }
   }
 
@@ -37,13 +42,13 @@ test('handleError', () => {
 
   expect(() => {
     handleError(new EdgeAddonActionError('message', 42))
-  }).toThrowError(new ProcessExitError(42))
+  }).toThrow(new ProcessExitError(42))
   expect(() => {
     handleError(new AxiosError('hello'))
-  }).toThrowError(new ProcessExitError(ERR_UNKNOWN_HTTP))
+  }).toThrow(new ProcessExitError(ERR_UNKNOWN_HTTP))
   expect(() => {
     handleError(new Error('hello'))
-  }).toThrowError(new ProcessExitError(ERR_UNKNOWN))
+  }).toThrow(new ProcessExitError(ERR_UNKNOWN))
 
   spy.mockRestore()
 })

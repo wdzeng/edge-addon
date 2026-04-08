@@ -2,9 +2,9 @@ import fs from 'node:fs'
 
 import tmp from 'tmp'
 
-import { handleError } from '@/error'
-import { uploadPackage } from '@/lib'
-import { isGitHubAction, logger } from '@/utils'
+import { handleError } from '#/error'
+import { uploadPackage } from '#/lib'
+import { isGitHubAction, logger } from '#/utils'
 
 // Base64-encoded ZIP file.
 const TEST_ADDON = `

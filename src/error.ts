@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios'
 import { CustomError } from 'ts-custom-error'
 
-import { logger, stringify } from '@/utils'
+import { logger, stringify } from '#/utils'
 
 export const ERR_UPLOADING_PACKAGE = 1
 export const ERR_PUBLISHING_PACKAGE = 4
@@ -10,11 +10,15 @@ export const ERR_UNKNOWN_HTTP = 254
 export const ERR_UNKNOWN = 255
 
 export class EdgeAddonActionError extends CustomError {
-  constructor(
-    message: string,
-    readonly code: number
-  ) {
+  #code: number
+
+  constructor(message: string, code: number) {
     super(message)
+    this.#code = code
+  }
+
+  get code(): number {
+    return this.#code
   }
 }
 

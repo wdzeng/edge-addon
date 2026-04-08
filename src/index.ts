@@ -1,8 +1,8 @@
 import * as core from '@actions/core'
 
-import { handleError } from '@/error'
-import { publishPackage, uploadPackage } from '@/lib'
-import { tryResolveFile } from '@/utils'
+import { handleError } from '#/error'
+import { publishPackage, uploadPackage } from '#/lib'
+import { tryResolveFile } from '#/utils'
 
 async function run(
   productId: string,
@@ -36,4 +36,4 @@ async function main() {
   }
 }
 
-void main()
+await main()

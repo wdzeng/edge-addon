@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import * as core from '@actions/core'
 import { globSync } from 'glob'
 
-import { ERR_INVALID_INPUT, EdgeAddonActionError } from '@/error'
+import { ERR_INVALID_INPUT, EdgeAddonActionError } from '#/error'
 
 export function stringify(e: unknown): string {
   if (typeof e === 'object') {
@@ -12,6 +12,9 @@ export function stringify(e: unknown): string {
   if (typeof e === 'string') {
     return e
   }
+
+  // We can make sure e is not an object.
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string
   return String(e)
 }
 
