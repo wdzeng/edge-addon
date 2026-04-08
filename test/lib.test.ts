@@ -15,7 +15,6 @@ import {
   vi
 } from 'vitest'
 
-import { ERR_PUBLISHING_PACKAGE, ERR_UPLOADING_PACKAGE, EdgeAddonActionError } from '#/error'
 import { publishPackage, uploadPackage } from '#/lib'
 
 import type {
@@ -179,17 +178,12 @@ describe('uploadPackage', () => {
     )
     await vi.waitUntil(() => uploadCreationTime !== undefined, { interval: 0 })
     vi.advanceTimersByTime(10 * 60 * 1000)
-    try {
-      await uploadPackagePromise
-    } catch (e: unknown) {
-      expect(e).toBeInstanceOf(EdgeAddonActionError)
-      expect(e).toHaveProperty('code', ERR_UPLOADING_PACKAGE)
-    }
 
+    await expect(uploadPackagePromise).rejects.toThrow()
     expect(Date.now()).toBe(10 * 60 * 1000)
   })
 
-  test('timeout exceeded', async () => {
+  test('upload timeout exceeded', async () => {
     let uploadCreationTime: string | undefined = undefined
 
     mockAdapter
@@ -223,12 +217,8 @@ describe('uploadPackage', () => {
     )
     await vi.waitUntil(() => uploadCreationTime !== undefined, { interval: 0 })
     const advanceTimerPromise = vi.advanceTimersByTimeAsync(10 * 60 * 1000)
-    try {
-      await uploadPackagePromise
-    } catch (e) {
-      expect(e).toBeInstanceOf(EdgeAddonActionError)
-      expect(e).toHaveProperty('code', ERR_UPLOADING_PACKAGE)
-    }
+
+    await expect(uploadPackagePromise).rejects.toThrow()
 
     // Let the timer finish and check the time.
     await advanceTimerPromise
@@ -359,17 +349,12 @@ describe('publishPackage', () => {
     )
     await vi.waitUntil(() => publishCreationTime !== undefined, { interval: 0 })
     vi.advanceTimersByTime(10 * 60 * 1000)
-    try {
-      await publishPackagePromise
-    } catch (e: unknown) {
-      expect(e).toBeInstanceOf(EdgeAddonActionError)
-      expect(e).toHaveProperty('code', ERR_PUBLISHING_PACKAGE)
-    }
 
+    await expect(publishPackagePromise).rejects.toThrow()
     expect(Date.now()).toBe(10 * 60 * 1000)
   })
 
-  test('timeout exceeded', async () => {
+  test('publishing timeout exceeded', async () => {
     let publishCreationTime: string | undefined = undefined
 
     mockAdapter
@@ -403,12 +388,8 @@ describe('publishPackage', () => {
     )
     await vi.waitUntil(() => publishCreationTime !== undefined, { interval: 0 })
     const advanceTimerPromise = vi.advanceTimersByTimeAsync(10 * 60 * 1000)
-    try {
-      await publishPackagePromise
-    } catch (e) {
-      expect(e).toBeInstanceOf(EdgeAddonActionError)
-      expect(e).toHaveProperty('code', ERR_PUBLISHING_PACKAGE)
-    }
+
+    await expect(publishPackagePromise).rejects.toThrow()
 
     // Let the timer finish and check the time.
     await advanceTimerPromise

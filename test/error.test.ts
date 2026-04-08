@@ -1,14 +1,6 @@
-import { AxiosError } from 'axios'
-import { CustomError } from 'ts-custom-error'
-import { expect, test, vi } from 'vitest'
+import { expect, test } from 'vitest'
 
-import {
-  ERR_UNKNOWN,
-  ERR_UNKNOWN_HTTP,
-  EdgeAddonActionError,
-  handleError,
-  tryGetErrorMessage
-} from '#/error'
+import { tryGetErrorMessage } from '#/error'
 
 test('tryGetErrorMessage', () => {
   expect(tryGetErrorMessage(new Error('hello'))).toBe('hello')
@@ -20,35 +12,4 @@ test('tryGetErrorMessage', () => {
   expect(tryGetErrorMessage(null)).toBe('null') // eslint-disable-line unicorn/no-null
   expect(tryGetErrorMessage(undefined)).toBe('undefined')
   expect(tryGetErrorMessage({ message: { foo: 'bar' } })).toBe('{"message":{"foo":"bar"}}')
-})
-
-test('handleError', () => {
-  class ProcessExitError extends CustomError {
-    #code: string | number | null | undefined
-    constructor(code: string | number | null | undefined) {
-      super(`Process exited with code ${code}`)
-      this.#code = code
-    }
-    get code(): string | number | null | undefined {
-      return this.#code
-    }
-  }
-
-  const spy = vi
-    .spyOn(process, 'exit')
-    .mockImplementation((exitCode: string | undefined | null | number) => {
-      throw new ProcessExitError(exitCode)
-    })
-
-  expect(() => {
-    handleError(new EdgeAddonActionError('message', 42))
-  }).toThrow(new ProcessExitError(42))
-  expect(() => {
-    handleError(new AxiosError('hello'))
-  }).toThrow(new ProcessExitError(ERR_UNKNOWN_HTTP))
-  expect(() => {
-    handleError(new Error('hello'))
-  }).toThrow(new ProcessExitError(ERR_UNKNOWN))
-
-  spy.mockRestore()
 })

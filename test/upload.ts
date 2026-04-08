@@ -2,9 +2,8 @@ import fs from 'node:fs'
 
 import tmp from 'tmp'
 
-import { handleError } from '#/error'
 import { uploadPackage } from '#/lib'
-import { isGitHubAction, logger } from '#/utils'
+import { isGitHubAction, logger, setUpAxiosInterceptor } from '#/utils'
 
 // Base64-encoded ZIP file.
 const TEST_ADDON = `
@@ -69,15 +68,12 @@ function getEnv(): {
 
 async function main(): Promise<void> {
   const { apiKey, clientId, productId } = getEnv()
+  setUpAxiosInterceptor()
 
   const zipPath = `${tmp.fileSync().name}.zip`
   fs.writeFileSync(zipPath, TEST_ADDON, 'base64')
 
-  try {
-    await uploadPackage(productId, zipPath, apiKey, clientId)
-  } catch (e: unknown) {
-    handleError(e)
-  }
+  await uploadPackage(productId, zipPath, apiKey, clientId)
 }
 
-void main()
+await main()

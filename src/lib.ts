@@ -2,12 +2,7 @@ import fs from 'node:fs'
 
 import axios from 'axios'
 
-import {
-  ERR_PUBLISHING_PACKAGE,
-  ERR_UPLOADING_PACKAGE,
-  EdgeAddonActionError,
-  tryGetErrorMessage
-} from '#/error'
+import { tryGetErrorMessage } from '#/error'
 import { logger } from '#/utils'
 
 import type { PublishStatusResponse } from '#/api-types/publish'
@@ -37,10 +32,7 @@ async function sendUploadPackageRequest(
   const operationId = response.headers.location as string | undefined
   if (!operationId) {
     logger.debug(JSON.stringify(response.headers))
-    throw new EdgeAddonActionError(
-      'Failed to upload the add-on. The API server does not provide operation ID.',
-      ERR_UPLOADING_PACKAGE
-    )
+    throw new Error('Failed to upload the add-on. The API server does not provide operation ID.')
   }
 
   logger.info('Package uploaded.')
@@ -81,7 +73,7 @@ async function waitUntilPackageValidated(
   }
 
   if (response.status === 'InProgress') {
-    throw new EdgeAddonActionError('Operation timeout exceeded.', ERR_UPLOADING_PACKAGE)
+    throw new Error('Operation timeout exceeded.')
   }
 
   if (response.status === 'Succeeded') {
@@ -91,17 +83,14 @@ async function waitUntilPackageValidated(
 
   logger.debug(`response: ${JSON.stringify(response)}`)
   if (!response.message) {
-    throw new EdgeAddonActionError(
-      'Failed to validate the add-on; the API server does not tell why.',
-      ERR_UPLOADING_PACKAGE
-    )
+    throw new Error('Failed to validate the add-on; the API server does not tell why.')
   }
 
   logger.error(response.message)
   for (const e of response.errors ?? []) {
     logger.error(tryGetErrorMessage(e))
   }
-  throw new EdgeAddonActionError('Failed to validate the add-on.', ERR_UPLOADING_PACKAGE)
+  throw new Error('Failed to validate the add-on.')
 }
 
 export async function uploadPackage(
@@ -131,10 +120,7 @@ async function sendPackagePublishingRequest(
   const operationId = response.headers.location as string | undefined
   if (!operationId) {
     logger.debug(JSON.stringify(response.headers))
-    throw new EdgeAddonActionError(
-      'Failed to publish the add-on. The API server does not provide operation ID.',
-      ERR_PUBLISHING_PACKAGE
-    )
+    throw new Error('Failed to publish the add-on. The API server does not provide operation ID.')
   }
   logger.info('Publishing request sent.')
   return operationId
@@ -174,7 +160,7 @@ async function waitUntilPackagePublished(
   }
 
   if ('status' in response && response.status === 'InProgress') {
-    throw new EdgeAddonActionError('Operation timeout exceeded.', ERR_PUBLISHING_PACKAGE)
+    throw new Error('Operation timeout exceeded.')
   }
 
   // Unexpected response.
@@ -182,9 +168,8 @@ async function waitUntilPackagePublished(
     logger.debug(`response: ${JSON.stringify(response)}`)
     const ref =
       'https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/publish/api/addons-api-reference?tabs=v1-1#response-when-the-publish-call-fails-with-an-unexpected-failure'
-    throw new EdgeAddonActionError(
-      `Failed to publish the add-on for unknown reason. This should be an internal error on the Microsoft Edge Add-ons API server side. You may want to check the API documentation: ${ref}`,
-      ERR_PUBLISHING_PACKAGE
+    throw new Error(
+      `Failed to publish the add-on for unknown reason. This should be an internal error on the Microsoft Edge Add-ons API server side. You may want to check the API documentation: ${ref}`
     )
   }
 
@@ -195,10 +180,7 @@ async function waitUntilPackagePublished(
 
   logger.debug(`response: ${JSON.stringify(response)}`)
   if (!response.message) {
-    throw new EdgeAddonActionError(
-      'Failed to publish the add-on; the API server does not tell why.',
-      ERR_PUBLISHING_PACKAGE
-    )
+    throw new Error('Failed to publish the add-on; the API server does not tell why.')
   }
 
   logger.error(response.message)
@@ -226,7 +208,7 @@ async function waitUntilPackagePublished(
     logger.error(`For this type of failure, you may want to check the API documentation: ${ref}`)
   }
 
-  throw new EdgeAddonActionError('Failed to publish the add-on.', ERR_PUBLISHING_PACKAGE)
+  throw new Error('Failed to publish the add-on.')
 }
 
 export async function publishPackage(

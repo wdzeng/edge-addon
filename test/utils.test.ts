@@ -4,7 +4,6 @@ import path from 'node:path'
 import tmp from 'tmp'
 import { describe, expect, test } from 'vitest'
 
-import { ERR_INVALID_INPUT, EdgeAddonActionError } from '#/error'
 import { stringify, tryResolveFile } from '#/utils'
 
 test('stringify', () => {
@@ -44,43 +43,24 @@ describe('tryResolveFile', () => {
      * We want to make sure when the working directory is /tmp, globbing ("bar.txt") should not find
      * the file (because its in a subdirectory).
      */
-    try {
-      const tmpDir = tmp.dirSync({ keep: false, unsafeCleanup: true })
-      fs.mkdirSync(path.join(tmpDir.name, 'foo'))
-      fs.writeFileSync(path.join(tmpDir.name, 'foo', 'bar.txt'), '')
-      process.chdir(tmpDir.name)
-      tryResolveFile('bar.txt')
+    const tmpDir = tmp.dirSync({ keep: false, unsafeCleanup: true })
+    fs.mkdirSync(path.join(tmpDir.name, 'foo'))
+    fs.writeFileSync(path.join(tmpDir.name, 'foo', 'bar.txt'), '')
+    process.chdir(tmpDir.name)
 
-      expect.unreachable()
-    } catch (e) {
-      expect(e).toBeInstanceOf(EdgeAddonActionError)
-      expect(e).toHaveProperty('code', ERR_INVALID_INPUT)
-    }
+    expect(() => tryResolveFile('bar.txt')).toThrow()
   })
 
   test('multiple files found', () => {
-    try {
-      const tmpDir = tmp.dirSync({ keep: false, unsafeCleanup: true })
-      fs.writeFileSync(path.join(tmpDir.name, 'foo.txt'), '')
-      fs.writeFileSync(path.join(tmpDir.name, 'bar.txt'), '')
-      process.chdir(tmpDir.name)
-      tryResolveFile('*.txt')
+    const tmpDir = tmp.dirSync({ keep: false, unsafeCleanup: true })
+    fs.writeFileSync(path.join(tmpDir.name, 'foo.txt'), '')
+    fs.writeFileSync(path.join(tmpDir.name, 'bar.txt'), '')
+    process.chdir(tmpDir.name)
 
-      expect.unreachable()
-    } catch (e) {
-      expect(e).toBeInstanceOf(EdgeAddonActionError)
-      expect(e).toHaveProperty('code', ERR_INVALID_INPUT)
-    }
+    expect(() => tryResolveFile('*.txt')).toThrow()
   })
 
   test('directory', () => {
-    try {
-      tryResolveFile('/tmp')
-
-      expect.unreachable()
-    } catch (e) {
-      expect(e).toBeInstanceOf(EdgeAddonActionError)
-      expect(e).toHaveProperty('code', ERR_INVALID_INPUT)
-    }
+    expect(() => tryResolveFile('/tmp')).toThrow()
   })
 })

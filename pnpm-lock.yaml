@@ -17,9 +17,6 @@ importers:
       glob:
         specifier: ^13.0.6
         version: 13.0.6
-      ts-custom-error:
-        specifier: ^3.3.1
-        version: 3.3.1
     devDependencies:
       '@types/node':
         specifier: ^24.12.2
@@ -1530,10 +1527,6 @@ packages:
     engines: {node: '>=18.12'}
     peerDependencies:
       typescript: '>=4.8.4'
-
-  ts-custom-error@3.3.1:
-    resolution: {integrity: sha512-5OX1tzOjxWEgsr/YEUWSuPrQ00deKLh6D7OTWcvNHm12/7QPyRh8SYpyWvA4IZv8H/+GQWQEh/kwo95Q9OVW1A==}
-    engines: {node: '>=14.0.0'}
 
   ts-declaration-location@1.0.7:
     resolution: {integrity: sha512-EDyGAwH1gO0Ausm9gV6T2nUvBgXT5kGoCMJPllOaooZ+4VvJiKBdZE7wK18N1deEowhcUptS+5GXZK8U/fvpwA==}
@@ -3089,8 +3082,6 @@ snapshots:
   ts-api-utils@2.5.0(typescript@6.0.2):
     dependencies:
       typescript: 6.0.2
-
-  ts-custom-error@3.3.1: {}
 
   ts-declaration-location@1.0.7(typescript@6.0.2):
     dependencies:

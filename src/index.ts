@@ -1,8 +1,7 @@
 import * as core from '@actions/core'
 
-import { handleError } from '#/error'
 import { publishPackage, uploadPackage } from '#/lib'
-import { tryResolveFile } from '#/utils'
+import { setUpAxiosInterceptor, tryResolveFile } from '#/utils'
 
 async function run(
   productId: string,
@@ -12,6 +11,8 @@ async function run(
   uploadOnly: boolean,
   notesForCertification: string | undefined
 ): Promise<void> {
+  setUpAxiosInterceptor()
+
   await uploadPackage(productId, zipPath, apiKey, clientId)
   if (!uploadOnly) {
     await publishPackage(productId, apiKey, clientId, notesForCertification)
@@ -28,12 +29,8 @@ async function main() {
   const notesForCertification =
     core.getInput('notes-for-certification', { required: false }) || undefined
 
-  try {
-    zipPath = tryResolveFile(zipPath)
-    await run(productId, zipPath, apiKey, clientId, uploadOnly, notesForCertification)
-  } catch (e: unknown) {
-    handleError(e)
-  }
+  zipPath = tryResolveFile(zipPath)
+  await run(productId, zipPath, apiKey, clientId, uploadOnly, notesForCertification)
 }
 
 await main()

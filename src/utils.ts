@@ -1,9 +1,8 @@
 import fs from 'node:fs'
 
 import * as core from '@actions/core'
+import axios, { AxiosError } from 'axios'
 import { globSync } from 'glob'
-
-import { ERR_INVALID_INPUT, EdgeAddonActionError } from '#/error'
 
 export function stringify(e: unknown): string {
   if (typeof e === 'object') {
@@ -22,16 +21,16 @@ export function tryResolveFile(pattern: string): string {
   const foundFiles = globSync(pattern)
 
   if (foundFiles.length < 1) {
-    throw new EdgeAddonActionError(`File not found: ${pattern}`, ERR_INVALID_INPUT)
+    throw new Error(`File not found: ${pattern}`)
   }
   if (foundFiles.length > 1) {
-    throw new EdgeAddonActionError(`Multiple files found: ${pattern}`, ERR_INVALID_INPUT)
+    throw new Error(`Multiple files found: ${pattern}`)
   }
 
   const stat = fs.statSync(foundFiles[0])
 
   if (!stat.isFile()) {
-    throw new EdgeAddonActionError(`Not a regular file: ${pattern}`, ERR_INVALID_INPUT)
+    throw new Error(`Not a regular file: ${pattern}`)
   }
 
   return foundFiles[0]
@@ -69,3 +68,21 @@ class StderrLogger implements Logger {
 }
 
 export const logger: Logger = isGitHubAction() ? core : new StderrLogger()
+
+export function setUpAxiosInterceptor() {
+  axios.interceptors.response.use(
+    response => response,
+    (error: unknown) => {
+      const errorMessage =
+        error instanceof AxiosError
+          ? stringify(error.response?.data ?? error.message)
+          : stringify(error)
+      logger.setFailed(`HTTP error: ${errorMessage}`)
+      return Promise.reject(
+        new Error(
+          `Microsoft Edge Add-ons API server (v1) responses with status code: ${(error as AxiosError).response?.status}`
+        )
+      )
+    }
+  )
+}
