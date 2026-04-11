@@ -21,8 +21,10 @@
     "glob": "^13.0.6"
   },
   "devDependencies": {
+    "@types/adm-zip": "^0.5.8",
     "@types/node": "^24.12.2",
     "@types/tmp": "^0.2.6",
+    "adm-zip": "^0.5.17",
     "axios-mock-adapter": "^2.1.0",
     "dotenv": "^17.4.1",
     "eslint": "^10.2.0",

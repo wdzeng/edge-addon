@@ -1,5 +1,4 @@
-import fs from 'node:fs'
-
+import AdmZip from 'adm-zip'
 import tmp from 'tmp'
 
 import { uploadPackage } from '#/lib'
@@ -66,12 +65,40 @@ function getEnv(): {
   return { apiKey, clientId, productId }
 }
 
+/**
+ * Generates a version for the testing Edge Addon package.
+ *
+ * The version is for the manifest.json. The Edge Addon server requires the new uploaded package to
+ * have a higher version than the currently published one. So we need to generate a version that is
+ * always higher than the previous one.
+ */
+function generateAddonVersion() {
+  // yyyyMMddHHmmss in GMT+0
+  const timeString = new Date().toISOString().replaceAll(/\D/g, '').slice(0, 14)
+  const yy = timeString.slice(2, 4)
+  const MMdd = timeString.slice(4, 6) + timeString.slice(6, 8)
+  const HHmm = timeString.slice(8, 10) + timeString.slice(10, 12)
+  const ss = timeString.slice(12, 14)
+  return `${Number(yy)}.${Number(MMdd)}.${Number(HHmm)}.${Number(ss)}`
+}
+
+function generateAddonZip(path: string) {
+  const zip = new AdmZip(Buffer.from(TEST_ADDON, 'base64'))
+  // eslint-disable-next-line unicorn/prefer-blob-reading-methods -- false positive
+  const manifestJson = JSON.parse(zip.readAsText('test-extension/manifest.json')) as {
+    version: string
+  }
+  manifestJson.version = generateAddonVersion()
+  logger.debug(`Generated version for the add-on: ${manifestJson.version}`)
+  zip.updateFile('test-extension/manifest.json', Buffer.from(JSON.stringify(manifestJson), 'utf8'))
+  zip.writeZip(path)
+}
+
 async function main(): Promise<void> {
   const { apiKey, clientId, productId } = getEnv()
+  const zipPath = tmp.tmpNameSync({ postfix: '.zip' })
+  generateAddonZip(zipPath)
   setUpAxiosInterceptor()
-
-  const zipPath = `${tmp.fileSync().name}.zip`
-  fs.writeFileSync(zipPath, TEST_ADDON, 'base64')
 
   await uploadPackage(productId, zipPath, apiKey, clientId)
 }

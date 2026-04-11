@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import { Readable } from 'node:stream'
 
 import * as core from '@actions/core'
 import axios, { AxiosError } from 'axios'
@@ -85,4 +86,12 @@ export function setUpAxiosInterceptor() {
       )
     }
   )
+}
+
+export function getReadStream(pathOfBuffer: string | Buffer): Readable {
+  if (typeof pathOfBuffer === 'string') {
+    return fs.createReadStream(pathOfBuffer)
+  }
+
+  return Readable.from(pathOfBuffer)
 }
